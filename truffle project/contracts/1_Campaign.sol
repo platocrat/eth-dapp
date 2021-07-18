@@ -17,13 +17,24 @@ contract Campaign {
     
     event goalReached(uint totalFund, uint campaignId, string name, address[] funders);
     
-    function donate(uint _value) external payable {
-        currFund+=_value;
+    function donate() public payable returns(bool sufficient) {
+        if (tx.origin.balance < msg.value) return false;
+        currFund += msg.value; // ?
+        //msg.sender.balance -= msg.value;
+        //address(this).balance += msg.value;
         funders.push(tx.origin);
+        return true;
+
+        //emit Transfer(msg.sender, receiver, amount);
         
-        if (currFund == goal) {
+        if (currFund >= goal) {
             emit goalReached(currFund, id, name, funders);
         }
+    }
+
+    function getBalanceInEth(address _addr) public view returns(uint){
+        return currFund;
+        //return ConvertLib.convert(_addr.balance+i,2);
     }
     
 }

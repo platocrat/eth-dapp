@@ -26,8 +26,8 @@ contract Organisation {
         members[_member] = 1;
     }
     
-    function donate(uint _id, uint _value) public {
-        campaigns[_id].donate(_value);
+    function donate(uint _id) payable public {
+        campaigns[_id].donate();
         
         if (campaigns[_id].currFund() >= campaigns[_id].goal()) {
             delete campaigns[_id];
