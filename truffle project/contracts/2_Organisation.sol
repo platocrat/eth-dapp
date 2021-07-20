@@ -18,7 +18,7 @@ contract Organisation {
     function addCampaign(uint _id, string memory _name, uint _goal) public {
         require(members[msg.sender] == 1);
         campaignCounter ++;
-        campaigns[campaignCounter] = new Campaign(_id, _name, _goal);
+        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal);
     }
     
     function addMember(address _member) public {
@@ -26,7 +26,7 @@ contract Organisation {
         members[_member] = 1;
     }
     
-    function donate(uint _id) payable public {
+    function donate(uint _id) external {
         campaigns[_id].donate();
         
         if (campaigns[_id].currFund() >= campaigns[_id].goal()) {

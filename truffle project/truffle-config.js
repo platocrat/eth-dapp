@@ -23,7 +23,9 @@
 //
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
-
+var HDWalletProvider = require("truffle-hdwallet-provider");
+var infura_apikey = "7ca887e08278450e8c483689f51bec9e";
+var mnemonic = "hammer general bridge west october end fiber media behind depend average swamp";
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -34,7 +36,6 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -46,6 +47,12 @@ module.exports = {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
+    },
+    ropsten: {
+      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f"),
+      host: "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f  ",     // Localhost (default: none)
+      port: 7545,            // Standard Ethereum port (default: none)
+      network_id: "3",       // Any network (default: none)
      },
     // Another network with more advanced options...
     // advanced: {
