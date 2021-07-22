@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import Main from './Main'
 //import ethers from 'ethers'
 import fs from 'fs'
-
+const ethers = require('ethers'); 
 
 class App extends Component {
   constructor() {
+  super();
   const { exit } = require('process');
-  const ethers = require('ethers'); 
   this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
   this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
   this.activeCampaigns = [];
@@ -292,21 +292,12 @@ class App extends Component {
     }
 
   ];
-  this.contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", orgAbi, provider);
+  this.contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
   //this.contractOrg = contractOrg.connect(signer);
-  var tx = await contract.addCampaign(1,"bla",5000000000000000,{gasLimit: 1001234});
-  const camp1 = await contract.campaigns(1);
-  var campaign = new ethers.Contract(camp1, campAbi, provider);
-  var campContract = campaign.connect(signer);
-  var tx = await campContract.donate(parameters);
-  console.log(tx);
-
-  var balance = await campContract.currFund();
-  console.log(ethers.utils.formatEther(balance.toString()));
   }
 
   async loadBlockchainData() {
-    var owner = await contractOrg.owner();
+    var owner = await this.contractOrg.owner();
     this.owner = owner;
     var parameters = {
       value: ethers.utils.parseEther('0.1'),
@@ -316,15 +307,23 @@ class App extends Component {
 
   async addCampaign(name, goal, user) {
     var signer = new ethers.Wallet(user, this.provider);
-    orgContract = this.contractOrg.connect(signer);
+    var orgContract = this.contractOrg.connect(signer);
     var tx = await orgContract.addCampaign(name, goal);
-    const camp1 = await contract.campaigns(orgContract.campaignCounter());
+    const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
     var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
-    this.activeCampaigns.push(campaign)
+    this.activeCampaigns.push(campaign);
+    console.log(tx);
   }
 
-  async donate(){
-    
+  async donate(campaignId, user, amount){
+    var signer = new ethers.Wallet(user, this.provider);
+    var contract = this.campaigns[campaignId].connect(signer);
+    var parameters = {
+      value: ethers.utils.parseEther(amount),
+      gasLimit: 0x7a1200
+    }
+    var tx = await contract.donate(parameters);
+    console.log(tx);
   }
 }
 

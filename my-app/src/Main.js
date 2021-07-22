@@ -30,13 +30,12 @@ class Main extends Component {
                 event.preventDefault()
                 let amount
                 amount = this.input.value.toString()
-                amount = ethers.utils.parseEther(amount)
-                this.activeCampaigns(1).donate(amount)
+                this.donate(1,this.input.adress, amount)
               }}>
               <div>
                 <label className="float-left"><b>Donate </b></label>
                 <span className="float-right text-muted">
-                  Balance: {ethers.utils.formatEther(this.activeCampaigns(1).balance)} ETH}
+                  Balance: {ethers.utils.formatEther(this.activeCampaigns[1].currFund())} ETH
                 </span>
               </div>
               <div className="input-group mb-4">
