@@ -15,7 +15,7 @@ contract Organisation {
     }
     
     
-    function addCampaign(uint _id, string memory _name, uint _goal) public {
+    function addCampaign(string memory _name, uint _goal) public {
         require(members[msg.sender] == 1);
         campaignCounter ++;
         campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal);

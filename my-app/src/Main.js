@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+const ethers = require('ethers');
 
 class Main extends Component {
 
