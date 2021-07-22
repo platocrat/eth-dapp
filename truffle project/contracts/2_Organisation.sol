@@ -25,12 +25,4 @@ contract Organisation {
         require(owner == msg.sender);
         members[_member] = 1;
     }
-    
-    function donate(uint _id) external {
-        campaigns[_id].donate();
-        
-        if (campaigns[_id].currFund() >= campaigns[_id].goal()) {
-            delete campaigns[_id];
-        }
-    }
 }

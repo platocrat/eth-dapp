@@ -3,8 +3,8 @@ const Organisation = artifacts.require('Organisation')
 
 module.exports = async function(deployer, network, accounts) {
   // Deploy Campaign
-  await deployer.deploy(Campaign, 1, "bla", 500)
-  const campaign = await Campaign.deployed()
+  //await deployer.deploy(Campaign, 1, "bla", 500)
+  //const campaign = await Campaign.deployed()
 
   // Deploy Organisation
   await deployer.deploy(Organisation)

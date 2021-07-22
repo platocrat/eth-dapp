@@ -7,34 +7,37 @@ contract Campaign {
     uint public currFund;
     uint public goal;
     address[] public funders;
+    address public owner;
+    mapping(address => uint) public fundings;
+    bool finished = false;
     
     constructor(uint _id, string memory _name, uint _goal){
         id = _id;
         name = _name;
         currFund = 0;
         goal = _goal;
+        owner = msg.sender;
     }
     
     event goalReached(uint totalFund, uint campaignId, string name, address[] funders);
     
     function donate() public payable returns(bool sufficient) {
         if (tx.origin.balance < msg.value) return false;
-        currFund += msg.value; // ?
-        //msg.sender.balance -= msg.value;
-        //address(this).balance += msg.value;
-        funders.push(tx.origin);
-        return true;
-
-        //emit Transfer(msg.sender, receiver, amount);
+        currFund += msg.value;
+        fundings[msg.sender] += value;
+        funders.push(tx.origin)
         
         if (currFund >= goal) {
             emit goalReached(currFund, id, name, funders);
+            finished = true;
         }
+        return true;
     }
 
-    function getBalanceInEth(address _addr) public view returns(uint){
-        return currFund;
-        //return ConvertLib.convert(_addr.balance+i,2);
-    }
+    function withdraw(address payable _recipient) public payable returns(bool sufficient) {
+        require(_recipient == owner);
+        _recipient.transfer(address(this).balance);
+        return true;
+        }
     
 }
