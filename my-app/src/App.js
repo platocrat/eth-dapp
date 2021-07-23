@@ -6,15 +6,16 @@ const ethers = require('ethers');
 
 class App extends Component {
   constructor() {
-  super();
-  const { exit } = require('process');
-  this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
-  this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
-  this.activeCampaigns = [];
-  this.finishedCampaigns = [];
+    super();
+    const { exit } = require('process');
+    this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
+    this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
+    this.activeCampaigns = [];
+    this.finishedCampaigns = [];
+    this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
 
     //await deploy();
-  this.orgAbi = [
+    this.orgAbi = [
     {
           "inputs": [],
           "stateMutability": "nonpayable",
@@ -134,7 +135,7 @@ class App extends Component {
           "type": "function"
         }
     ];
-  this.campAbi =[
+    this.campAbi =[
     {
       "inputs": [
         {
@@ -291,9 +292,10 @@ class App extends Component {
       "type": "function"
     }
 
-  ];
-  this.contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
-  //this.contractOrg = contractOrg.connect(signer);
+    ];
+    this.contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
+    //this.contractOrg = this.contractOrg.connect(this.signer);
+    console.log(this.activeCampaigns);
   }
 
   async loadBlockchainData() {
@@ -307,7 +309,8 @@ class App extends Component {
 
   async addCampaign(name, goal, user) {
     var signer = new ethers.Wallet(user, this.provider);
-    var orgContract = this.contractOrg.connect(signer);
+    var contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
+    var orgContract = contractOrg.connect(signer);
     var tx = await orgContract.addCampaign(name, goal);
     const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
     var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
@@ -324,6 +327,23 @@ class App extends Component {
     }
     var tx = await contract.donate(parameters);
     console.log(tx);
+  }
+  render() {
+    /*let content
+    if(this.state.loading) {
+      content = <p id="loader" className="text-center">Loading...</p>
+    } else {*/
+    let content
+    
+    content = <Main
+      activeCampaign={this.activeCampaigns[0]}
+      donate={this.donate}
+      />
+    return (
+        <div>
+          {content}
+        </div>
+      );
   }
 }
 

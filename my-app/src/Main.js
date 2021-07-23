@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 const ethers = require('ethers');
 
 class Main extends Component {
-
   render() {
     return (
       <div id="content" className="mt-3">
@@ -16,8 +15,8 @@ class Main extends Component {
           </thead>
           <tbody>
             <tr>
-              <td>{ethers.utils.formatEther(this.activeCampaigns(1).currFund)} ETH</td>
-              <td>{ethers.utils.formatEther(this.activeCampaigns(1).goal)} ETH</td>
+              <td>{ethers.utils.formatEther(this.props.currFund)} ETH</td>
+              <td>{ethers.utils.formatEther(this.props.goal)} ETH</td>
             </tr>
           </tbody>
         </table>
@@ -35,7 +34,7 @@ class Main extends Component {
               <div>
                 <label className="float-left"><b>Donate </b></label>
                 <span className="float-right text-muted">
-                  Balance: {ethers.utils.formatEther(this.activeCampaigns[1].currFund())} ETH
+                  Balance: {ethers.utils.formatEther(this.activeCampaigns[0].currFund())} ETH
                 </span>
               </div>
               <div className="input-group mb-4">
