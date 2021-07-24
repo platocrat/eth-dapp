@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Main from './Main'
 //import ethers from 'ethers'
 import fs from 'fs'
+import emailjs from 'emailjs-com'
 const ethers = require('ethers'); 
 
 class App extends Component {
@@ -356,6 +357,7 @@ class App extends Component {
           // the name of the event, parnetheses containing the data type of each event, no spaces
           ethers.utils.id("goalReached(uint,uint,string,address[])")
       ]}*/
+      
   }
 
   async loadBlockchainData() {
@@ -365,6 +367,17 @@ class App extends Component {
       value: ethers.utils.parseEther('0.1'),
       gasLimit: 0x7a1200
     }
+  }
+
+  sendMail() {
+    var params = {
+      'to_email': 'mculyak@gmail.com'
+    }
+
+    emailjs.send('service_uthqgcf', 'template_ecyce4i', params).then(function(res) {
+      console.log('KITA!');
+    } )
+    return 0;
   }
 
   async addCampaign(name, goal, user) {
@@ -401,6 +414,7 @@ class App extends Component {
     }
     var tx = await contract.donate(parameters);
     console.log(tx);
+    this.sendMail()
   }
 
   async withdraw(campaignId, recepient) {
@@ -600,7 +614,11 @@ class App extends Component {
             </form>
             </div>
         </div>
-
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script type="text/javascript">
+(function() {
+emailjs.init("user_gzsTSWT9xHNSKVd7W1EDK")})();
+</script>
       </div>
     );
   }
