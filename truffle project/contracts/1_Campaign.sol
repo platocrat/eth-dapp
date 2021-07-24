@@ -24,8 +24,8 @@ contract Campaign {
     function donate() public payable returns(bool sufficient) {
         if (tx.origin.balance < msg.value) return false;
         currFund += msg.value;
-        fundings[msg.sender] += value;
-        funders.push(tx.origin)
+        fundings[msg.sender] += msg.value;
+        funders.push(tx.origin);
         
         if (currFund >= goal) {
             emit goalReached(currFund, id, name, funders);

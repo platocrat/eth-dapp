@@ -5,18 +5,25 @@ import fs from 'fs'
 const ethers = require('ethers'); 
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     const { exit } = require('process');
+    this.state = {
+      address : "",
+      value : ""
+    }
+    //this.state = {value: ''};
+    this.handleAddress = this.handleAddress.bind(this);
+    this.handleValue = this.handleValue.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
     this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
     this.activeCampaigns = [];
     this.finishedCampaigns = [];
-    this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
 
     //await deploy();
     this.orgAbi = [
-    {
+  {
           "inputs": [],
           "stateMutability": "nonpayable",
           "type": "constructor"
@@ -135,7 +142,7 @@ class App extends Component {
           "type": "function"
         }
     ];
-    this.campAbi =[
+  this.campAbi =[
     {
       "inputs": [
         {
@@ -291,11 +298,13 @@ class App extends Component {
       "stateMutability": "view",
       "type": "function"
     }
-
-    ];
+  ];
+    
     this.contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
     //this.contractOrg = this.contractOrg.connect(this.signer);
     console.log(this.activeCampaigns);
+    console.log(this.contractOrg);
+    this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
   }
 
   async loadBlockchainData() {
@@ -308,9 +317,10 @@ class App extends Component {
   }
 
   async addCampaign(name, goal, user) {
+    console.log(this.contractOrg);
     var signer = new ethers.Wallet(user, this.provider);
-    var contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
-    var orgContract = contractOrg.connect(signer);
+    //var contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
+    var orgContract = this.contractOrg.connect(signer);
     var tx = await orgContract.addCampaign(name, goal);
     const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
     var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
@@ -319,6 +329,8 @@ class App extends Component {
   }
 
   async donate(campaignId, user, amount){
+    console.log(user)
+    console.log(amount)
     var signer = new ethers.Wallet(user, this.provider);
     var contract = this.campaigns[campaignId].connect(signer);
     var parameters = {
@@ -328,22 +340,86 @@ class App extends Component {
     var tx = await contract.donate(parameters);
     console.log(tx);
   }
+
+  handleAddress(event) {    this.setState({address: event.target.value});  }
+  handleValue(event) {    this.setState({value: event.target.value});  }
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
   render() {
-    /*let content
-    if(this.state.loading) {
-      content = <p id="loader" className="text-center">Loading...</p>
-    } else {*/
-    let content
-    
-    content = <Main
-      activeCampaign={this.activeCampaigns[0]}
-      donate={this.donate}
-      />
     return (
-        <div>
-          {content}
+      <div id="content" className="mt-3">
+
+        <table className="table table-borderless text-muted text-center">
+          <thead>
+            <tr>
+              <th scope="col">Current fund</th>
+              <th scope="col">Goal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{ethers.utils.formatEther("10")} ETH</td>
+              <td>{ethers.utils.formatEther("10")} ETH</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div className="card mb-4" >
+
+          <div className="card-body">
+
+            <form className="mb-3" onSubmit={(event) => {
+                event.preventDefault()
+                let amount
+                amount = this.state.value.toString()
+                this.donate(0,this.state.address, amount)
+              }}>
+              <div>
+                <label className="float-left"><b>Donate </b></label>
+                <span className="float-right text-muted">
+                  Balance: {ethers.utils.formatEther("7")} ETH
+                </span>
+              </div>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.address}
+                  onChange={this.handleAddress}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp; ETH
+                  </div>
+                </div>
+              </div>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.address = input.toString()}}
+                  value={this.state.value}
+                  onChange={this.handleValue}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </div>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">DONATE!</button>
+            </form>
+          </div>
         </div>
-      );
+
+      </div>
+    );
   }
 }
 
