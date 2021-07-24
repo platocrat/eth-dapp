@@ -9,14 +9,14 @@ contract Campaign {
     address[] public funders;
     address public owner;
     mapping(address => uint) public fundings;
-    bool finished = false;
+    bool public finished = false;
     
     constructor(uint _id, string memory _name, uint _goal){
         id = _id;
         name = _name;
         currFund = 0;
         goal = _goal;
-        owner = msg.sender;
+        owner = tx.origin;
     }
     
     event goalReached(uint totalFund, uint campaignId, string name, address[] funders);
@@ -35,7 +35,7 @@ contract Campaign {
     }
 
     function withdraw(address payable _recipient) public payable returns(bool sufficient) {
-        require(_recipient == owner);
+        require(_recipient == owner && msg.sender == owner);
         _recipient.transfer(address(this).balance);
         return true;
         }
