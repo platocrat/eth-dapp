@@ -37,6 +37,7 @@ contract Campaign {
     function withdraw(address payable _recipient) public payable returns(bool sufficient) {
         require(_recipient == owner && msg.sender == owner);
         _recipient.transfer(address(this).balance);
+        currFund = 0;
         return true;
         }
     

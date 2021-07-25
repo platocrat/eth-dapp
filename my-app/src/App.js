@@ -3,6 +3,8 @@ import Main from './Main'
 //import ethers from 'ethers'
 import fs from 'fs'
 import emailjs from 'emailjs-com'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import CampaignRow from "./campaignRow"
 const ethers = require('ethers'); 
 
 class App extends Component {
@@ -327,7 +329,16 @@ class App extends Component {
       campGoal : "",
       campUser : "",
       ID: "",
-      recepient: ""
+      recepient: "",
+      memberAddress: ""
+    }
+
+    Campaign = {
+      name: "",
+      id: "",
+      currFund: "",
+      goal: "",
+      description: ""
     }
     //this.state = {value: ''};
     this.handleAddress = this.handleAddress.bind(this);
@@ -338,6 +349,7 @@ class App extends Component {
     this.handleUser = this.handleUser.bind(this);
     this.handleRecepient = this.handleRecepient.bind(this);
     this.handleID = this.handleID.bind(this);
+    this.handleMemberAddress = this.handleMemberAddress.bind(this);
     this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
     this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
     this.activeCampaigns = [new ethers.Contract("0x14159d166803E259F838771E4f5959a2Cf501F84", this.campAbi, this.provider)];
@@ -345,7 +357,7 @@ class App extends Component {
 
     //await deploy();
     
-    this.contractOrg = new ethers.Contract("0x2EE11331d74E716a275Edce670909A866B421767", this.orgAbi, this.provider);
+    this.contractOrg = new ethers.Contract("0x87E90967C2B34E425a1B2c357BEfE8DC201d06A7", this.orgAbi, this.provider);
     //this.contractOrg = this.contractOrg.connect(this.signer);
     //this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
     console.log(this.activeCampaigns);
@@ -358,6 +370,13 @@ class App extends Component {
           ethers.utils.id("goalReached(uint,uint,string,address[])")
       ]}*/
       
+    const filter = {
+      address: "0x87E90967C2B34E425a1B2c357BEfE8DC201d06A7",
+      fromBlock: 0,
+      topics: [ethers.utils.id("goalReached(uint,uint,string,address[])")]
+    };
+    this.logs = this.provider.getLogs(filter);
+
   }
 
   async loadBlockchainData() {
@@ -367,9 +386,19 @@ class App extends Component {
       value: ethers.utils.parseEther('0.1'),
       gasLimit: 0x7a1200
     }
+    for (let i = 0; i < this.activeCampaigns.length; i++) {
+      var name = await this.activeCampaigns[i].name();
+      var id = await this.activeCampaigns[i].id();
+      var currFund = await this.activeCampaigns[i].currFund();
+      var goal = await this.activeCampaigns[i].goal();
+      this.activeCampaigns[i].name = name.toString();
+      this.activeCampaigns[i].id = id.toString();
+      this.activeCampaigns[i].currFund = currFund.toString();
+      this.activeCampaigns[i].goal = goal.toString();
+    }
   }
 
-  sendMail() {
+  async sendMail() {
     var params = {
       'to_email': 'mculyak@gmail.com'
     }
@@ -382,11 +411,15 @@ class App extends Component {
 
   async addCampaign(name, goal, user) {
     console.log(this.contractOrg);
+    user = '0x' + user;
     var signer = new ethers.Wallet(user, this.provider);
     //var contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
     const orgContract = this.contractOrg.connect(signer);
     goal = ethers.utils.parseEther(goal);
-    var tx = await orgContract.addCampaign(name, goal);
+    var parameters = {
+      gasLimit: 0x7a1200
+    }
+    var tx = await orgContract.addCampaign(name, goal, parameters);
     const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
     var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
     this.activeCampaigns.push(campaign);
@@ -397,8 +430,10 @@ class App extends Component {
           ethers.utils.id("goalReached(uint,uint,string,address[])")
       ]
   }
-    campaign.on(filter, this.campaignFinished);
+    //campaign.on(filter, this.campaignFinished);
+    campaign.on('goalReached', (totalFund, campaignId, name) => this.sendMail())
     console.log(tx);
+    console.log(this.logs);
   }
 
   async donate(campaignId, user, amount){
@@ -436,6 +471,15 @@ class App extends Component {
     console.log("campaign finished");
   }
 
+  async addMember(memberAddress) {
+    const orgContract = this.contractOrg.connect(this.signer);
+    var parameters = {
+      gasLimit: 0x7a1200
+    }
+    var tx = await orgContract.addMember(memberAddress, parameters);
+    console.log(tx);
+  }
+
   handleAddress(event) {    this.setState({address: event.target.value});  }
   handleValue(event) {    this.setState({value: event.target.value});  }
   handleName(event) {    this.setState({campName: event.target.value});  }
@@ -443,29 +487,62 @@ class App extends Component {
   handleUser(event) {    this.setState({campUser: event.target.value});  }
   handleID(event) {    this.setState({ID: event.target.value});  }
   handleRecepient(event) {    this.setState({recepient: event.target.value});  }
+  handleMemberAddress(event) {    this.setState({memberAddress: event.target.value});  }
   handleSubmit(event) {
     alert('A name was submitted: ' + this.state.value);
     event.preventDefault();
   }
 
   render() {
+
+    const campList = () => {
+      let content = [];
+      this.loadBlockchainData();
+      for (let i = 0; i < this.activeCampaigns.length; i++) {
+        const item = this.activeCampaigns[i];
+        content.push(<CampaignRow key = {this.activeCampaigns[i].id}
+        name={this.activeCampaigns[i].name}
+          id={this.activeCampaigns[i].id}
+          currFund={this.activeCampaigns[i].currFund}
+          goal={this.activeCampaigns[i].goal}
+          description={"blabla"} />);
+      }
+      return content;
+    };
+
     return (
+      /*<div className="App">
+      <Main />
+      <Login />
+    </div>*/
+
+      <div>
+
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <a class="navbar-brand" href="#"> <b>cryptoBROKE.rs</b></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav">
+    <li class="nav-item active">
+        <a class="nav-link" href="#"> Home </a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#"> About </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"> Log in/Sign up </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
       <div id="content" className="mt-3">
 
-        <table className="table table-borderless text-muted text-center">
-          <thead>
-            <tr>
-              <th scope="col">Current fund</th>
-              <th scope="col">Goal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{ethers.utils.formatEther("10")} ETH</td>
-              <td>{ethers.utils.formatEther("10")} ETH</td>
-            </tr>
-          </tbody>
-        </table>
+      <label className="float-left"><b> Campaigns </b></label>
+
+        {campList()}
 
         <div className="card mb-4" >
 
@@ -475,13 +552,12 @@ class App extends Component {
                 event.preventDefault()
                 let amount
                 amount = this.state.value.toString()
-                this.donate(1,this.state.address, amount)
+                this.donate(0,this.state.address, amount)
               }}>
               <div>
                 <label className="float-left"><b>Donate </b></label>
-                <span className="float-right text-muted">
-                  Balance: {ethers.utils.formatEther("7")} ETH
-                </span>
+                <div> </div>
+                <span className="float-right text-muted"> Address from: </span>
               </div>
               <div className="input-group mb-4">
                 <input
@@ -494,10 +570,10 @@ class App extends Component {
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp; ETH
                   </div>
                 </div>
               </div>
+              <span className="float-right text-muted"> Amount: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -509,14 +585,12 @@ class App extends Component {
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp; ETH
                   </div>
                 </div>
               </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">DONATE!</button>
             </form>
-          </div>
-          <div>
           <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
                 this.addCampaign(this.state.campName, this.state.campGoal, this.state.campUser)
@@ -524,6 +598,7 @@ class App extends Component {
               <div>
                 <label className="float-left"><b>Create campaign</b></label>
               </div>
+              <span className="float-right text-muted"> Campaign name: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -535,10 +610,10 @@ class App extends Component {
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp; ETH
                   </div>
                 </div>
               </div>
+              <span className="float-right text-muted"> Campaign goal: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -554,6 +629,7 @@ class App extends Component {
                   </div>
                 </div>
               </div>
+              <span className="float-right text-muted"> Your wallet private key: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -571,8 +647,6 @@ class App extends Component {
               </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">SUBMIT!</button>
             </form>
-            </div>
-            <div>
             <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
                 this.withdraw(this.state.ID, this.state.recepient)
@@ -580,6 +654,7 @@ class App extends Component {
               <div>
                 <label className="float-left"><b>Withdraw ETH</b></label>
               </div>
+              <span className="float-right text-muted"> Campaign ID: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -591,10 +666,10 @@ class App extends Component {
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp; ETH
                   </div>
                 </div>
               </div>
+              <span className="float-right text-muted"> Recepient wallet address: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -612,6 +687,26 @@ class App extends Component {
               </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">WITHDRAW!</button>
             </form>
+            <form className="mb-3" onSubmit={(event) => {
+                event.preventDefault()
+                this.addMember(this.state.memberAddress)
+              }}>
+              <div>
+                <label className="float-left"><b>Add organisation member</b></label>
+              </div>
+              <span className="float-right text-muted"> New member wallet address: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.memberAddress}
+                  onChange={this.handleMemberAddress}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+              </div>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">ADD MEMBER</button>
+            </form>
             </div>
         </div>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
@@ -619,6 +714,7 @@ class App extends Component {
 (function() {
 emailjs.init("user_gzsTSWT9xHNSKVd7W1EDK")})();
 </script>
+      </div>
       </div>
     );
   }
