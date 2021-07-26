@@ -10,12 +10,14 @@ contract Campaign {
     address public owner;
     mapping(address => uint) public fundings;
     bool public finished = false;
+    string public description;
     
-    constructor(uint _id, string memory _name, uint _goal){
+    constructor(uint _id, string memory _name, uint _goal, string memory _description){
         id = _id;
         name = _name;
         currFund = 0;
         goal = _goal;
+        description = _description;
         owner = tx.origin;
     }
     

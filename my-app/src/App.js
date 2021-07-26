@@ -98,6 +98,11 @@ class App extends Component {
             "internalType": "uint256",
             "name": "_goal",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_description",
+            "type": "string"
           }
         ],
         "name": "addCampaign",
@@ -136,6 +141,11 @@ class App extends Component {
             "internalType": "uint256",
             "name": "_goal",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_description",
+            "type": "string"
           }
         ],
         "stateMutability": "nonpayable",
@@ -180,6 +190,19 @@ class App extends Component {
             "internalType": "uint256",
             "name": "",
             "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "description",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -323,36 +346,43 @@ class App extends Component {
     ];
 
     this.state = {
+      campId: "",
       address : "",
       value : "",
       campName : "",
       campGoal : "",
       campUser : "",
+      campDescription : "",
       ID: "",
       recepient: "",
       memberAddress: "",
+      email: "",
       loading: true
     }
 
     
     //this.state = {value: ''};
+    this.handleCampId = this.handleCampId.bind(this);
     this.handleAddress = this.handleAddress.bind(this);
     this.handleValue = this.handleValue.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleName = this.handleName.bind(this);
     this.handleGoal = this.handleGoal.bind(this);
     this.handleUser = this.handleUser.bind(this);
+    this.handleDescription = this.handleDescription.bind(this);
     this.handleRecepient = this.handleRecepient.bind(this);
     this.handleID = this.handleID.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
     this.handleMemberAddress = this.handleMemberAddress.bind(this);
     this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
     this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
     this.activeCampaigns = [new ethers.Contract("0x14159d166803E259F838771E4f5959a2Cf501F84", this.campAbi, this.provider)];
     this.finishedCampaigns = [];
     this.virtualCamps=[];
+    this.emails = {};
     //await deploy();
     
-    this.contractOrg = new ethers.Contract("0x87E90967C2B34E425a1B2c357BEfE8DC201d06A7", this.orgAbi, this.provider);
+    this.contractOrg = new ethers.Contract("0x8921E155c34fdA42b1Fe7779b448C3ab457091b6", this.orgAbi, this.provider);
     //this.contractOrg = this.contractOrg.connect(this.signer);
     //this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
     console.log(this.activeCampaigns);
@@ -366,16 +396,17 @@ class App extends Component {
       ]}*/
       
     const filter = {
-      address: "0x87E90967C2B34E425a1B2c357BEfE8DC201d06A7",
+      address: "0x8921E155c34fdA42b1Fe7779b448C3ab457091b6",
       fromBlock: 0,
       topics: [ethers.utils.id("goalReached(uint,uint,string,address[])")]
     };
     this.logs = this.provider.getLogs(filter);
-    this.loadBlockchainData();
+    setInterval(this.loadBlockchainData(), 60000);
 
   }
 
   async loadBlockchainData() {
+    this.setState({loading : true});
     var parameters = {
       value: ethers.utils.parseEther('0.1'),
       gasLimit: 0x7a1200
@@ -388,7 +419,7 @@ class App extends Component {
         id: "",
         currFund: "",
         goal: "",
-        description: "",
+        description: ""
       }
       var addr = await this.contractOrg.campaigns(i);
       console.log(addr);
@@ -402,11 +433,12 @@ class App extends Component {
       var id = await camp.id();
       var currFund = await camp.currFund();
       var goal = await camp.goal();
+      var description = await camp.description();
       Campaign.name = name.toString();
       Campaign.id = id.toString();
       Campaign.currFund = ethers.utils.formatEther(currFund.toString());
       Campaign.goal = ethers.utils.formatEther(goal.toString());
-      Campaign.description = "bla";
+      Campaign.description = description.toString();
       virtualCamps.push(Campaign);
     }
     this.virtualCamps = virtualCamps;
@@ -425,7 +457,7 @@ class App extends Component {
     return 0;
   }
 
-  async addCampaign(name, goal, user) {
+  async addCampaign(name, goal, description, user) {
     console.log(this.contractOrg);
     user = '0x' + user;
     var signer = new ethers.Wallet(user, this.provider);
@@ -435,7 +467,7 @@ class App extends Component {
     var parameters = {
       gasLimit: 0x7a1200
     }
-    var tx = await orgContract.addCampaign(name, goal, parameters);
+    var tx = await orgContract.addCampaign(name, goal, description, parameters);
     const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
     var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
     var Campaign = {
@@ -457,9 +489,16 @@ class App extends Component {
     campaign.on('goalReached', (totalFund, campaignId, name) => this.sendMail())
     console.log(tx);
     console.log(this.logs);
+    this.setState({
+      campName: '',
+      campGoal: '',
+      campDescription: '',
+      campUser: '',
+      loading : true
+    });
   }
 
-  async donate(campaignId, user, amount){
+  async donate(campaignId, user, amount, email){
     console.log(user)
     console.log(amount)
     var signer = new ethers.Wallet(user, this.provider);
@@ -471,9 +510,22 @@ class App extends Component {
       gasLimit: 0x7a1200
     }
     var tx = await contract.donate(parameters);
+    if (this.emails[campaignId]){
+      this.emails[campaignId].push(email);
+    } else {
+      this.emails = {[campaignId] : [email]};
+    }
+    console.log(this.emails);
     console.log(tx);
     this.sendMail()
     this.loadBlockchainData();
+    this.setState({
+      campId: "",
+      address: "",
+      value: "",
+      email: ""
+    });
+    this.setState({loading : true});
   }
 
   async withdraw(campaignId, recepient) {
@@ -490,6 +542,10 @@ class App extends Component {
     var tx = await contract.withdraw(recepient, parameters);
     console.log(tx);
     this.loadBlockchainData();
+    this.setState({
+      ID: '',
+      recepient: ''
+    });
   }
 
   async campaignFinished() {
@@ -503,15 +559,21 @@ class App extends Component {
     }
     var tx = await orgContract.addMember(memberAddress, parameters);
     console.log(tx);
+    this.setState({
+      memberAddress: ''
+    });
   }
 
+  handleCampId(event) {    this.setState({campId: event.target.value});  }  
   handleAddress(event) {    this.setState({address: event.target.value});  }
   handleValue(event) {    this.setState({value: event.target.value});  }
   handleName(event) {    this.setState({campName: event.target.value});  }
   handleGoal(event) {    this.setState({campGoal: event.target.value});  }
   handleUser(event) {    this.setState({campUser: event.target.value});  }
+  handleDescription(event) { this.setState({campDescription: event.target.value}); } 
   handleID(event) {    this.setState({ID: event.target.value});  }
   handleRecepient(event) {    this.setState({recepient: event.target.value});  }
+  handleEmail(event) {  this.setState({email: event.target.value}); }
   handleMemberAddress(event) {    this.setState({memberAddress: event.target.value});  }
   handleSubmit(event) {
     alert('A name was submitted: ' + this.state.value);
@@ -530,23 +592,9 @@ class App extends Component {
           id={this.virtualCamps[i].id}
           currFund={this.virtualCamps[i].currFund}
           goal={this.virtualCamps[i].goal}
-          description={"blabla"} />);
+          description={this.virtualCamps[i].description} />);
       }
       return content;
-    }else{
-      this.loadBlockchainData();
-      let content = [];
-      console.log(this.virtualCamps);
-      for (let i = 0; i < this.virtualCamps.length; i++) {
-          content.push(<CampaignRow
-          name={this.virtualCamps[i].name}
-          id={this.virtualCamps[i].id}
-          currFund={this.virtualCamps[i].currFund}
-          goal={this.virtualCamps[i].goal}
-          description={"blabla"} />);
-      }
-      return content;
-
     }
     };
 
@@ -592,13 +640,28 @@ class App extends Component {
                 event.preventDefault()
                 let amount
                 amount = this.state.value.toString()
-                this.donate(2,this.state.address, amount)
+                this.donate(this.state.campId,this.state.address, amount, this.state.email)
               }}>
               <div>
                 <label className="float-left"><b>Donate </b></label>
                 <div> </div>
-                <span className="float-right text-muted"> Address from: </span>
+                <span className="float-right text-muted"> Campaign ID: </span>
               </div>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.campId}
+                  onChange={this.handleCampId}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                  </div>
+                </div>
+              </div>
+                <span className="float-right text-muted"> Your wallet private key: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -629,11 +692,26 @@ class App extends Component {
                   </div>
                 </div>
               </div>
+              <span className="float-right text-muted"> Email: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.email}
+                  onChange={this.handleEmail}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                  </div>
+                </div>
+              </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">DONATE!</button>
             </form>
           <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
-                this.addCampaign(this.state.campName, this.state.campGoal, this.state.campUser)
+                this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser)
               }}>
               <div>
                 <label className="float-left"><b>Create campaign</b></label>
@@ -660,6 +738,22 @@ class App extends Component {
                   //ref={(input) => { this.input.address = input.toString()}}
                   value={this.state.campGoal}
                   onChange={this.handleGoal}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </div>
+              <span className="float-right text-muted"> Campaign description: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.address = input.toString()}}
+                  value={this.state.campDescription}
+                  onChange={this.handleDescription}
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />

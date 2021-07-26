@@ -15,10 +15,10 @@ contract Organisation {
     }
     
     
-    function addCampaign(string memory _name, uint _goal) public {
+    function addCampaign(string memory _name, uint _goal, string memory _description) public {
         require(members[msg.sender] == 1);
         campaignCounter ++;
-        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal);
+        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description);
     }
     
     function addMember(address _member) public {
