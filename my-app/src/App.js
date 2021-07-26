@@ -330,16 +330,11 @@ class App extends Component {
       campUser : "",
       ID: "",
       recepient: "",
-      memberAddress: ""
+      memberAddress: "",
+      loading: true
     }
 
-    Campaign = {
-      name: "",
-      id: "",
-      currFund: "",
-      goal: "",
-      description: ""
-    }
+    
     //this.state = {value: ''};
     this.handleAddress = this.handleAddress.bind(this);
     this.handleValue = this.handleValue.bind(this);
@@ -354,7 +349,7 @@ class App extends Component {
     this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
     this.activeCampaigns = [new ethers.Contract("0x14159d166803E259F838771E4f5959a2Cf501F84", this.campAbi, this.provider)];
     this.finishedCampaigns = [];
-
+    this.virtualCamps=[];
     //await deploy();
     
     this.contractOrg = new ethers.Contract("0x87E90967C2B34E425a1B2c357BEfE8DC201d06A7", this.orgAbi, this.provider);
@@ -376,35 +371,56 @@ class App extends Component {
       topics: [ethers.utils.id("goalReached(uint,uint,string,address[])")]
     };
     this.logs = this.provider.getLogs(filter);
+    this.loadBlockchainData();
 
   }
 
   async loadBlockchainData() {
-    var owner = await this.contractOrg.owner();
-    this.owner = owner;
     var parameters = {
       value: ethers.utils.parseEther('0.1'),
       gasLimit: 0x7a1200
     }
-    for (let i = 0; i < this.activeCampaigns.length; i++) {
-      var name = await this.activeCampaigns[i].name();
-      var id = await this.activeCampaigns[i].id();
-      var currFund = await this.activeCampaigns[i].currFund();
-      var goal = await this.activeCampaigns[i].goal();
-      this.activeCampaigns[i].name = name.toString();
-      this.activeCampaigns[i].id = id.toString();
-      this.activeCampaigns[i].currFund = currFund.toString();
-      this.activeCampaigns[i].goal = goal.toString();
+    var virtualCamps=[];
+    var counter = await this.contractOrg.campaignCounter();
+    for (let i = 1; i < counter; i++) {
+      var Campaign = {
+        name: "",
+        id: "",
+        currFund: "",
+        goal: "",
+        description: "",
+      }
+      var addr = await this.contractOrg.campaigns(i);
+      console.log(addr);
+      var camp = new ethers.Contract(addr, this.campAbi, this.provider);
+      camp.on("*", (from, to, value, event) => {
+        console.log("event: ", event);
+        this.sendMail();
+      });
+      console.log(camp)
+      var name = await camp.name();
+      var id = await camp.id();
+      var currFund = await camp.currFund();
+      var goal = await camp.goal();
+      Campaign.name = name.toString();
+      Campaign.id = id.toString();
+      Campaign.currFund = ethers.utils.formatEther(currFund.toString());
+      Campaign.goal = ethers.utils.formatEther(goal.toString());
+      Campaign.description = "bla";
+      virtualCamps.push(Campaign);
     }
+    this.virtualCamps = virtualCamps;
+    console.log(this.virtualCamps);
+    this.setState({loading : false});
   }
 
   async sendMail() {
     var params = {
-      'to_email': 'mculyak@gmail.com'
+      'to_email': 'karlo.v.cihlar@gmail.com'
     }
 
     emailjs.send('service_uthqgcf', 'template_ecyce4i', params).then(function(res) {
-      console.log('KITA!');
+      console.log('mail sent!');
     } )
     return 0;
   }
@@ -422,6 +438,13 @@ class App extends Component {
     var tx = await orgContract.addCampaign(name, goal, parameters);
     const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
     var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
+    var Campaign = {
+      name: "",
+      id: "",
+      currFund: "",
+      goal: "",
+      description: ""
+    }
     this.activeCampaigns.push(campaign);
     const filter = {
       address: campaign.address,
@@ -450,6 +473,7 @@ class App extends Component {
     var tx = await contract.donate(parameters);
     console.log(tx);
     this.sendMail()
+    this.loadBlockchainData();
   }
 
   async withdraw(campaignId, recepient) {
@@ -465,6 +489,7 @@ class App extends Component {
     console.log(contract);
     var tx = await contract.withdraw(recepient, parameters);
     console.log(tx);
+    this.loadBlockchainData();
   }
 
   async campaignFinished() {
@@ -494,20 +519,35 @@ class App extends Component {
   }
 
   render() {
-
     const campList = () => {
+      console.log(this.loading);
+      if (!this.state.loading){
       let content = [];
-      this.loadBlockchainData();
-      for (let i = 0; i < this.activeCampaigns.length; i++) {
-        const item = this.activeCampaigns[i];
-        content.push(<CampaignRow key = {this.activeCampaigns[i].id}
-        name={this.activeCampaigns[i].name}
-          id={this.activeCampaigns[i].id}
-          currFund={this.activeCampaigns[i].currFund}
-          goal={this.activeCampaigns[i].goal}
+      console.log(this.virtualCamps);
+      for (let i = 0; i < this.virtualCamps.length; i++) {
+          content.push(<CampaignRow
+          name={this.virtualCamps[i].name}
+          id={this.virtualCamps[i].id}
+          currFund={this.virtualCamps[i].currFund}
+          goal={this.virtualCamps[i].goal}
           description={"blabla"} />);
       }
       return content;
+    }else{
+      this.loadBlockchainData();
+      let content = [];
+      console.log(this.virtualCamps);
+      for (let i = 0; i < this.virtualCamps.length; i++) {
+          content.push(<CampaignRow
+          name={this.virtualCamps[i].name}
+          id={this.virtualCamps[i].id}
+          currFund={this.virtualCamps[i].currFund}
+          goal={this.virtualCamps[i].goal}
+          description={"blabla"} />);
+      }
+      return content;
+
+    }
     };
 
     return (
@@ -552,7 +592,7 @@ class App extends Component {
                 event.preventDefault()
                 let amount
                 amount = this.state.value.toString()
-                this.donate(0,this.state.address, amount)
+                this.donate(2,this.state.address, amount)
               }}>
               <div>
                 <label className="float-left"><b>Donate </b></label>
