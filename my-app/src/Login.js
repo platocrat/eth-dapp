@@ -639,27 +639,28 @@ class Login extends Component{
 
     render() {
         return(
-          
+          <div id="content" className="mt-4">
           
                     <div className="card-body">
           
                     <form className="mb-3">
                         <div>
-                          <label className="float-left"><b>LOGIN</b></label>
+                          <h3 className="float-left"><b>LOGIN</b></h3>
                         </div>
                         <span className="float-right text-muted"> Your Wallet secret key: </span>
                         <div className="input-group mb-4">
                           <input
                             type="text"
                             //ref={(input) => { this.input.value = input }}
-                            value={this.state.campName}
-                            onChange={this.handleName}
+                            value={this.state.address}
+                            onChange={this.handleAddress}
                             className="form-control form-control-lg"
                             placeholder="0"
                             required />
                             </div>
                     </form>
-                    <Link to="/member" className="btn btn-primary">Login</Link>
+                    <Link to="/member"> <button type="button" class="btn btn-primary" disabled={!this.state.address}>Login</button> </Link>
+                    </div>
                     </div>
         );
     }

@@ -650,7 +650,7 @@ class Login extends Component{
                 this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser)
               }}>
               <div>
-                <label className="float-left"><b>Create campaign</b></label>
+                <h4 className="float-left"><b>CREATE CAMPAIGN</b></h4>
               </div>
               <span className="float-right text-muted"> Campaign name: </span>
               <div className="input-group mb-4">
@@ -662,10 +662,6 @@ class Login extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                  </div>
-                </div>
               </div>
               <span className="float-right text-muted"> Campaign goal: </span>
               <div className="input-group mb-4">
@@ -679,7 +675,7 @@ class Login extends Component{
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp; ETH
                   </div>
                 </div>
               </div>
@@ -693,11 +689,6 @@ class Login extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
-                  </div>
-                </div>
               </div>
               <span className="float-right text-muted"> Your wallet private key: </span>
               <div className="input-group mb-4">
@@ -709,11 +700,6 @@ class Login extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
-                  </div>
-                </div>
               </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">SUBMIT!</button>
             </form>
@@ -722,7 +708,7 @@ class Login extends Component{
                 this.withdraw(this.state.ID, this.state.recepient)
               }}>
               <div>
-                <label className="float-left"><b>Withdraw ETH</b></label>
+                <h4 className="float-left"><b>WITHDRAW ETH</b></h4>
               </div>
               <span className="float-right text-muted"> Campaign ID: </span>
               <div className="input-group mb-4">
@@ -734,10 +720,6 @@ class Login extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                  </div>
-                </div>
               </div>
               <span className="float-right text-muted"> Recepient wallet address: </span>
               <div className="input-group mb-4">
@@ -749,11 +731,6 @@ class Login extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
-                  </div>
-                </div>
               </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">WITHDRAW!</button>
             </form>
@@ -762,7 +739,7 @@ class Login extends Component{
                 this.addMember(this.state.memberAddress)
               }}>
               <div>
-                <label className="float-left"><b>Add organisation member</b></label>
+                <h4 className="float-left"><b>ADD ORGANISATION MEMBER</b></h4>
               </div>
               <span className="float-right text-muted"> New member wallet address: </span>
               <div className="input-group mb-4">

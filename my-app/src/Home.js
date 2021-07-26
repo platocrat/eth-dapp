@@ -563,6 +563,7 @@ class Home extends Component{
       async donate(campaignId, user, amount, email){
         console.log(user)
         console.log(amount)
+        user = '0x' + user;
         var signer = new ethers.Wallet(user, this.provider);
         var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
@@ -667,9 +668,9 @@ class Home extends Component{
           }
           };
         return(
-            <div id="content" className="mt-3">
+            <div id="content" className="mt-4">
 
-      <label className="float-left"><b> Campaigns </b></label>
+      <h3 className="float-left"><b> CAMPAIGNS </b></h3>
 
         {campList()}
 
@@ -697,10 +698,6 @@ class Home extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                  </div>
-                </div>
               </div>
                 <span className="float-right text-muted"> Your wallet private key: </span>
               <div className="input-group mb-4">
@@ -712,10 +709,6 @@ class Home extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                  </div>
-                </div>
               </div>
               <span className="float-right text-muted"> Amount: </span>
               <div className="input-group mb-4">
@@ -743,10 +736,6 @@ class Home extends Component{
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                  </div>
-                </div>
               </div>
               <button type="submit" className="btn btn-primary btn-block btn-lg">DONATE!</button>
             </form>
