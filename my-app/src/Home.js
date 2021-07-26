@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
+import CampaignRow from "./campaignRow"
 const ethers = require('ethers'); 
 
-class Login extends Component{
-    
+
+class Home extends Component{
+
     constructor(props) {
         super(props);    
         const { exit } = require('process');
@@ -448,7 +450,7 @@ class Login extends Component{
         }
         var virtualCamps=[];
         var counter = await this.contractOrg.campaignCounter();
-        for (let i = 1; i < counter+1; i++) {
+        for (let i = 1; i <= counter; i++) {
           var Campaign = {
             name: "",
             id: "",
@@ -472,8 +474,8 @@ class Login extends Component{
           var goal = await camp.goal();
           var description = await camp.description();
           var mails = [];
-          var counter = await camp.mailCount();
-          for(var j=0; j<counter; j++){
+          var counterMail = await camp.mailCount();
+          for(var j=0; j<counterMail; j++){
             var mail = await camp.mails(j);
             mails.push(mail);
             console.log(mail);
@@ -636,101 +638,54 @@ class Login extends Component{
         event.preventDefault();
       }
 
-    render() {
+    render(){
+        const campList = () => {
+            console.log(this.loading);
+            if (!this.state.loading){
+            let content = [];
+            console.log(this.virtualCamps);
+            for (let i = 0; i < this.virtualCamps.length; i++) {
+                content.push(<CampaignRow
+                name={this.virtualCamps[i].name}
+                id={this.virtualCamps[i].id}
+                currFund={this.virtualCamps[i].currFund}
+                goal={this.virtualCamps[i].goal}
+                description={this.virtualCamps[i].description} />);
+            }
+            return content;
+          }
+          else{
+            this.loadBlockchainData();
+          }
+          };
         return(
-            
-        <div id="content" className="mt-3">
+            <div id="content" className="mt-3">
+
+      <label className="float-left"><b> Campaigns </b></label>
+
+        {campList()}
 
         <div className="card mb-4" >
 
           <div className="card-body">
 
-          <form className="mb-3" onSubmit={(event) => {
-                event.preventDefault()
-                this.props.addCampaign(this.props.campName, this.props.campGoal, this.props.campDescription, this.props.campUser)
-              }}>
-              <div>
-                <label className="float-left"><b>Create campaign</b></label>
-              </div>
-              <span className="float-right text-muted"> Campaign name: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.value = input }}
-                  value={this.props.campName}
-                  onChange={this.props.handleName}
-                  className="form-control form-control-lg"
-                  placeholder="0"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                  </div>
-                </div>
-              </div>
-              <span className="float-right text-muted"> Campaign goal: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.address = input.toString()}}
-                  value={this.props.campGoal}
-                  onChange={this.props.handleGoal}
-                  className="form-control form-control-lg"
-                  placeholder="0"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
-                  </div>
-                </div>
-              </div>
-              <span className="float-right text-muted"> Campaign description: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.address = input.toString()}}
-                  value={this.props.campDescription}
-                  onChange={this.props.handleDescription}
-                  className="form-control form-control-lg"
-                  placeholder="0"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
-                  </div>
-                </div>
-              </div>
-              <span className="float-right text-muted"> Your wallet private key: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.address = input.toString()}}
-                  value={this.state.campUser}
-                  onChange={this.props.handleUser}
-                  className="form-control form-control-lg"
-                  placeholder="0"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
-                  </div>
-                </div>
-              </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">SUBMIT!</button>
-            </form>
             <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
-                this.props.withdraw(this.props.ID, this.props.recepient)
+                let amount
+                amount = this.state.value.toString()
+                this.donate(this.state.campId,this.state.address, amount, this.state.email)
               }}>
               <div>
-                <label className="float-left"><b>Withdraw ETH</b></label>
+                <label className="float-left"><b>Donate </b></label>
+                <div> </div>
+                <span className="float-right text-muted"> Campaign ID: </span>
               </div>
-              <span className="float-right text-muted"> Campaign ID: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
                   //ref={(input) => { this.input.value = input }}
-                  value={this.props.ID}
-                  onChange={this.props.handleID}
+                  value={this.state.campId}
+                  onChange={this.handleCampId}
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
@@ -739,53 +694,59 @@ class Login extends Component{
                   </div>
                 </div>
               </div>
-              <span className="float-right text-muted"> Recepient wallet address: </span>
+                <span className="float-right text-muted"> Your wallet private key: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.address}
+                  onChange={this.handleAddress}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                  </div>
+                </div>
+              </div>
+              <span className="float-right text-muted"> Amount: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
                   //ref={(input) => { this.input.address = input.toString()}}
-                  value={this.props.recepient}
-                  onChange={this.props.handleRecepient}
+                  value={this.state.value}
+                  onChange={this.handleValue}
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp; ETH
                   </div>
                 </div>
               </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">WITHDRAW!</button>
-            </form>
-            <form className="mb-3" onSubmit={(event) => {
-                event.preventDefault()
-                this.props.addMember(this.props.memberAddress)
-              }}>
-              <div>
-                <label className="float-left"><b>Add organisation member</b></label>
-              </div>
-              <span className="float-right text-muted"> New member wallet address: </span>
+              <span className="float-right text-muted"> Email: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
                   //ref={(input) => { this.input.value = input }}
-                  value={this.props.memberAddress}
-                  onChange={this.props.handleMemberAddress}
+                  value={this.state.email}
+                  onChange={this.handleEmail}
                   className="form-control form-control-lg"
                   placeholder="0"
                   required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                  </div>
+                </div>
               </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">ADD MEMBER</button>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">DONATE!</button>
             </form>
             </div>
-        </div>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script type="text/javascript">
-(function() {
-emailjs.init("user_gzsTSWT9xHNSKVd7W1EDK")})();
-</script>
-      </div>
-    );
+            </div>
+            </div>
+        )
     }
 }
-export default Login;
+
+export default Home;

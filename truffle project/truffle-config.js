@@ -49,8 +49,8 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
     ropsten: {
-      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f"),
-      host: "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f  ",     // Localhost (default: none)
+      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/0ea19bbf4c4d49518a0966666ff234f3"),
+      host: "https://ropsten.infura.io/v3/0ea19bbf4c4d49518a0966666ff234f",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "3",       // Any network (default: none)
      },

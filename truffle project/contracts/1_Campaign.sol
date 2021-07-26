@@ -11,7 +11,9 @@ contract Campaign {
     mapping(address => uint) public fundings;
     bool public finished = false;
     string public description;
-    
+    string[] public mails;
+    uint public mailCount;
+
     constructor(uint _id, string memory _name, uint _goal, string memory _description){
         id = _id;
         name = _name;
@@ -20,14 +22,15 @@ contract Campaign {
         description = _description;
         owner = tx.origin;
     }
-    
     event goalReached(uint totalFund, uint campaignId, string name, address[] funders);
     
-    function donate() public payable returns(bool sufficient) {
+    function donate(string memory _mail) public payable returns(bool sufficient) {
         if (tx.origin.balance < msg.value) return false;
         currFund += msg.value;
         fundings[msg.sender] += msg.value;
         funders.push(tx.origin);
+        mails.push(_mail);
+        mailCount++;
         
         if (currFund >= goal) {
             emit goalReached(currFund, id, name, funders);
