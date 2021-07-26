@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
-import {BrowserRouter, Route, Link} from "react-router-dom"
 const ethers = require('ethers'); 
 
 class Login extends Component{
@@ -639,32 +638,154 @@ class Login extends Component{
 
     render() {
         return(
-          
-          
-                    <div className="card-body">
-          
-                    <form className="mb-3" onSubmit={(event) => {
-                          event.preventDefault()
-                          this.props.addCampaign(this.props.campName, this.props.campGoal, this.props.campDescription, this.props.campUser)
-                        }}>
-                        <div>
-                          <label className="float-left"><b>LOGIN</b></label>
-                        </div>
-                        <span className="float-right text-muted"> Your Wallet address: </span>
-                        <div className="input-group mb-4">
-                          <input
-                            type="text"
-                            //ref={(input) => { this.input.value = input }}
-                            value={this.props.campName}
-                            onChange={this.props.handleName}
-                            className="form-control form-control-lg"
-                            placeholder="0"
-                            required />
-                            </div>
-                    </form>
-                    <Link to="/member" className="btn btn-primary">Login</Link>
-                    </div>
-        );
+            
+        <div id="content" className="mt-3">
+
+        <div className="card mb-4" >
+
+          <div className="card-body">
+
+          <form className="mb-3" onSubmit={(event) => {
+                event.preventDefault()
+                this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser)
+              }}>
+              <div>
+                <label className="float-left"><b>Create campaign</b></label>
+              </div>
+              <span className="float-right text-muted"> Campaign name: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.campName}
+                  onChange={this.handleName}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                  </div>
+                </div>
+              </div>
+              <span className="float-right text-muted"> Campaign goal: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.address = input.toString()}}
+                  value={this.state.campGoal}
+                  onChange={this.handleGoal}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </div>
+              <span className="float-right text-muted"> Campaign description: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.address = input.toString()}}
+                  value={this.state.campDescription}
+                  onChange={this.handleDescription}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </div>
+              <span className="float-right text-muted"> Your wallet private key: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.address = input.toString()}}
+                  value={this.state.campUser}
+                  onChange={this.handleUser}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </div>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">SUBMIT!</button>
+            </form>
+            <form className="mb-3" onSubmit={(event) => {
+                event.preventDefault()
+                this.withdraw(this.state.ID, this.state.recepient)
+              }}>
+              <div>
+                <label className="float-left"><b>Withdraw ETH</b></label>
+              </div>
+              <span className="float-right text-muted"> Campaign ID: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.ID}
+                  onChange={this.handleID}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                  </div>
+                </div>
+              </div>
+              <span className="float-right text-muted"> Recepient wallet address: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.address = input.toString()}}
+                  value={this.state.recepient}
+                  onChange={this.handleRecepient}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+                <div className="input-group-append">
+                  <div className="input-group-text">
+                    &nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </div>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">WITHDRAW!</button>
+            </form>
+            <form className="mb-3" onSubmit={(event) => {
+                event.preventDefault()
+                this.addMember(this.state.memberAddress)
+              }}>
+              <div>
+                <label className="float-left"><b>Add organisation member</b></label>
+              </div>
+              <span className="float-right text-muted"> New member wallet address: </span>
+              <div className="input-group mb-4">
+                <input
+                  type="text"
+                  //ref={(input) => { this.input.value = input }}
+                  value={this.state.memberAddress}
+                  onChange={this.handleMemberAddress}
+                  className="form-control form-control-lg"
+                  placeholder="0"
+                  required />
+              </div>
+              <button type="submit" className="btn btn-primary btn-block btn-lg">ADD MEMBER</button>
+            </form>
+            </div>
+        </div>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script type="text/javascript">
+(function() {
+emailjs.init("user_gzsTSWT9xHNSKVd7W1EDK")})();
+</script>
+      </div>
+    );
     }
 }
 export default Login;

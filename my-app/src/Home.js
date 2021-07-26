@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
 import CampaignRow from "./campaignRow"
+import{ init } from 'emailjs-com';
+init("user_YNFgGm6YjbHsPXIakNxdw");
 const ethers = require('ethers'); 
 
 
@@ -484,6 +486,9 @@ class Home extends Component{
           Campaign.id = id.toString();
           Campaign.currFund = ethers.utils.formatEther(currFund.toString());
           Campaign.goal = ethers.utils.formatEther(goal.toString());
+          if (Campaign.goal <= Campaign.currFund){
+            //this.sendMail(Campaign.id);
+          }
           Campaign.description = description.toString();
           Campaign.mails = mails;
           virtualCamps.push(Campaign);
@@ -502,9 +507,9 @@ class Home extends Component{
                 'campaign_name': this.virtualCamps[i].name,
                 'goal':this.virtualCamps[i].goal,
                 'curr_fund':this.virtualCamps[i].currFund
-          
               }
-              emailjs.send('service_uthqgcf', 'template_ecyce4i', params).then(function(res) {
+              console.log(params);
+              emailjs.send('service_7pkwiug', 'template_fru8jpq', params).then(function(res) {
               console.log('mail sent!');
               } )
             }
@@ -566,7 +571,7 @@ class Home extends Component{
         contract = contract.connect(signer);
         var parameters = {
           value: ethers.utils.parseEther(amount),
-          gasLimit: 0x7a1200
+          gasLimit: 0x7a120
         }
         var tx = await contract.donate(email,parameters);
         if (this.emails[campaignId]){
@@ -583,6 +588,11 @@ class Home extends Component{
           value: "",
           email: ""
         });
+        var currfund = await contract.currFund();
+        var goal = await contract.goal();
+        if((parseFloat(currfund,10) + parseFloat(amount,10))<parseFloat(goal)){
+          this.sendMail(campaignId);
+        }
         this.setState({loading : true});
       }
     
