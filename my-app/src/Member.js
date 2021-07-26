@@ -592,7 +592,7 @@ class Login extends Component{
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
         var contract = contract.connect(this.signer);
         var parameters = {
-          gasLimit: 0x7a1200
+          gasLimit: 0x6a1200
         }
         console.log(contract);
         var tx = await contract.withdraw(recepient, parameters);

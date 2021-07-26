@@ -467,7 +467,6 @@ class Home extends Component{
           camp = camp.connect(this.signer);
           camp.on("*", (from, to, value, event) => {
             console.log("event: ", event);
-            this.sendMail();
           });
           console.log(camp)
           var name = await camp.name();
@@ -550,7 +549,6 @@ class Home extends Component{
           ]
       }
         //campaign.on(filter, this.campaignFinished);
-        campaign.on('goalReached', (totalFund, campaignId, name) => this.sendMail(campaignId))
         console.log(tx);
         console.log(this.logs);
         this.setState({
@@ -654,7 +652,7 @@ class Home extends Component{
             if (!this.state.loading){
             let content = [];
             console.log(this.virtualCamps);
-            for (let i = 0; i < this.virtualCamps.length; i++) {
+            for (var i = 0; i < this.virtualCamps.length; i++) {
                 content.push(<CampaignRow
                 name={this.virtualCamps[i].name}
                 id={this.virtualCamps[i].id}

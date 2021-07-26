@@ -643,20 +643,17 @@ class Login extends Component{
           
                     <div className="card-body">
           
-                    <form className="mb-3" onSubmit={(event) => {
-                          event.preventDefault()
-                          this.props.addCampaign(this.props.campName, this.props.campGoal, this.props.campDescription, this.props.campUser)
-                        }}>
+                    <form className="mb-3">
                         <div>
                           <label className="float-left"><b>LOGIN</b></label>
                         </div>
-                        <span className="float-right text-muted"> Your Wallet address: </span>
+                        <span className="float-right text-muted"> Your Wallet secret key: </span>
                         <div className="input-group mb-4">
                           <input
                             type="text"
                             //ref={(input) => { this.input.value = input }}
-                            value={this.props.campName}
-                            onChange={this.props.handleName}
+                            value={this.state.campName}
+                            onChange={this.handleName}
                             className="form-control form-control-lg"
                             placeholder="0"
                             required />
