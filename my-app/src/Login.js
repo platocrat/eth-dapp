@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
 import {BrowserRouter, Route, Link} from "react-router-dom"
 const ethers = require('ethers'); 
+const color="#F9F3F3";
 
 class Login extends Component{
     
@@ -655,11 +656,11 @@ class Login extends Component{
                             value={this.state.address}
                             onChange={this.handleAddress}
                             className="form-control form-control-lg"
-                            placeholder="0"
+                            placeholder="Enter your wallet secret key (without 0x)"
                             required />
                             </div>
                     </form>
-                    <Link to="/member"> <button type="button" class="btn btn-primary" disabled={!this.state.address}>Login</button> </Link>
+                    <Link to="/member"> <button type="submit" className="btn btn-info btn-block btn-lg" disabled={!this.state.address}>LOGIN</button> </Link>
                     </div>
                     </div>
         );

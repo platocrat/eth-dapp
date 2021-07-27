@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
 const ethers = require('ethers'); 
+const color="#F9F3F3";
 
 class Login extends Component{
     
@@ -639,20 +640,19 @@ class Login extends Component{
     render() {
         return(
             
-        <div id="content" className="mt-3">
+        <div id="content" className="mt-3" style={{backgroundColor: color}}>
 
-        <div className="card mb-4" >
+        <div className="card mb-4" style={{backgroundColor: color}}>
 
-          <div className="card-body">
-
+          <div className="card-body" style={{backgroundColor: color}}>
           <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
                 this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser)
               }}>
-              <div>
-                <h4 className="float-left"><b>CREATE CAMPAIGN</b></h4>
+              <div class="form-group">
+                <h4 className="float-left bg-info "><b>CREATE CAMPAIGN</b></h4>
               </div>
-              <span className="float-right text-muted"> Campaign name: </span>
+              <span className="float-right"> Campaign name: </span>
               <div className="input-group mb-4">
                 <input
                   type="text"
@@ -660,7 +660,7 @@ class Login extends Component{
                   value={this.state.campName}
                   onChange={this.handleName}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter campaign name"
                   required />
               </div>
               <span className="float-right text-muted"> Campaign goal: </span>
@@ -671,7 +671,7 @@ class Login extends Component{
                   value={this.state.campGoal}
                   onChange={this.handleGoal}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter campaign goal in ETH"
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
@@ -687,7 +687,7 @@ class Login extends Component{
                   value={this.state.campDescription}
                   onChange={this.handleDescription}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter campaign description"
                   required />
               </div>
               <span className="float-right text-muted"> Your wallet private key: </span>
@@ -698,17 +698,17 @@ class Login extends Component{
                   value={this.state.campUser}
                   onChange={this.handleUser}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter your wallet private key (without 0x)"
                   required />
               </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">SUBMIT!</button>
+              <button type="submit" className="btn btn-info btn-block btn-lg">SUBMIT!</button>
             </form>
             <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
                 this.withdraw(this.state.ID, this.state.recepient)
               }}>
-              <div>
-                <h4 className="float-left"><b>WITHDRAW ETH</b></h4>
+              <div class="form-group">
+                <h4 className="float-left bg-info "><b>WITHDRAW ETH</b></h4>
               </div>
               <span className="float-right text-muted"> Campaign ID: </span>
               <div className="input-group mb-4">
@@ -718,7 +718,7 @@ class Login extends Component{
                   value={this.state.ID}
                   onChange={this.handleID}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter campaign ID (number)"
                   required />
               </div>
               <span className="float-right text-muted"> Recepient wallet address: </span>
@@ -729,17 +729,17 @@ class Login extends Component{
                   value={this.state.recepient}
                   onChange={this.handleRecepient}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter recepient wallet addres (i.e. 0xAb17w...)"
                   required />
               </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">WITHDRAW!</button>
+              <button type="submit" className="btn btn-info btn-block btn-lg">WITHDRAW!</button>
             </form>
             <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
                 this.addMember(this.state.memberAddress)
               }}>
-              <div>
-                <h4 className="float-left"><b>ADD ORGANISATION MEMBER</b></h4>
+              <div class="form-group">
+                <h4 className="float-left bg-info "><b>ADD ORGANISATION MEMBER</b></h4>
               </div>
               <span className="float-right text-muted"> New member wallet address: </span>
               <div className="input-group mb-4">
@@ -749,10 +749,10 @@ class Login extends Component{
                   value={this.state.memberAddress}
                   onChange={this.handleMemberAddress}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter new member wallet address (i.e. 0xAb17w...)"
                   required />
               </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">ADD MEMBER</button>
+              <button type="submit" className="btn btn-info btn-block btn-lg">ADD MEMBER</button>
             </form>
             </div>
         </div>

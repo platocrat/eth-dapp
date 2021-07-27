@@ -5,6 +5,7 @@ import CampaignRow from "./campaignRow"
 import{ init } from 'emailjs-com';
 init("user_YNFgGm6YjbHsPXIakNxdw");
 const ethers = require('ethers'); 
+const color="#F9F3F3";
 
 
 class Home extends Component{
@@ -668,15 +669,16 @@ class Home extends Component{
           }
           };
         return(
-            <div id="content" className="mt-4">
+            <div id="content" className="mt-4" style={{backgroundColor: color}}>
 
       <h3 className="float-left"><b> CAMPAIGNS </b></h3>
-
+      <div class="row">
         {campList()}
+      </div>
 
-        <div className="card mb-4" >
+        <div className="card mb-6" style={{backgroundColor: color}}>
 
-          <div className="card-body">
+          <div className="card-body" style={{backgroundColor: color}}>
 
             <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
@@ -685,7 +687,7 @@ class Home extends Component{
                 this.donate(this.state.campId,this.state.address, amount, this.state.email)
               }}>
               <div>
-                <label className="float-left"><b>Donate </b></label>
+                <h4 className="float-left bg-info"><b>DONATE </b></h4>
                 <div> </div>
                 <span className="float-right text-muted"> Campaign ID: </span>
               </div>
@@ -696,7 +698,7 @@ class Home extends Component{
                   value={this.state.campId}
                   onChange={this.handleCampId}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter campaign ID (number)"
                   required />
               </div>
                 <span className="float-right text-muted"> Your wallet private key: </span>
@@ -707,8 +709,9 @@ class Home extends Component{
                   value={this.state.address}
                   onChange={this.handleAddress}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter your wallet private key (without 0x)"
                   required />
+                  <small class="w-100 text-muted">Your wallet private key is safe with us :)</small>
               </div>
               <span className="float-right text-muted"> Amount: </span>
               <div className="input-group mb-4">
@@ -718,7 +721,7 @@ class Home extends Component{
                   value={this.state.value}
                   onChange={this.handleValue}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter amount you are donating (in ETH)"
                   required />
                 <div className="input-group-append">
                   <div className="input-group-text">
@@ -734,10 +737,11 @@ class Home extends Component{
                   value={this.state.email}
                   onChange={this.handleEmail}
                   className="form-control form-control-lg"
-                  placeholder="0"
+                  placeholder="Enter email"
                   required />
+                <small class="w-100 text-muted">Your email is safe with us :)</small>
               </div>
-              <button type="submit" className="btn btn-primary btn-block btn-lg">DONATE!</button>
+              <button type="submit" className="btn btn-info btn-block btn-lg">DONATE!</button>
             </form>
             </div>
             </div>

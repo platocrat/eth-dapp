@@ -3,20 +3,21 @@ import React, { Component } from 'react'
 class CampaignRow extends Component{
     render() {
         return (
-            <table className="table table-borderless text-muted text-center">
-            <thead>
-            <tr>
-              <th> {this.props.name} </th>
-              <th> campaign ID: {this.props.id} </th>
-              <th> {this.props.currFund} / {this.props.goal} </th>
-            </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td> Description: {this.props.description}</td>
-          </tr>
-        </tbody>
-        </table>
+
+
+<div class="card text-center w-50">
+<div class="card-header text-white bg-info"><b>
+campaign ID: {this.props.id}</b>
+</div>
+<div class="card-body">
+  <h5 class="card-title">{this.props.name}</h5>
+  <p class="card-text">Description: {this.props.description}</p>
+</div>
+<div class="card-footer text-primary"><b>
+{this.props.currFund} / {this.props.goal} ETH </b>
+</div>
+</div>
+
         );
     }
 }
