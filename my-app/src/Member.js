@@ -419,7 +419,7 @@ class Login extends Component{
         this.emails = {};
         //await deploy(); 
         
-        this.contractOrg = new ethers.Contract("0x27bDe75fA260b97F1fB9122fA539904F873b1059", this.orgAbi, this.provider);
+        this.contractOrg = new ethers.Contract("0x8936Fe51F2eA660e69cfd36F3Fe0DCDa3f9fEead", this.orgAbi, this.provider);
         //this.contractOrg = this.contractOrg.connect(this.signer);
         //this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
     
@@ -651,9 +651,6 @@ class Login extends Component{
           <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
                 this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser);
-                if (this.state.notMember == true){
-                  console.log("You are not a member");
-                }
               }}>
               <div class="form-group">
                 <h4 className="float-left bg-info "><b>CREATE CAMPAIGN</b></h4>
