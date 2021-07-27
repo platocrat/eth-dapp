@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Logo from "./logo.png"
+import Logo from "./LOGO2.jpeg"
 
 class NavBar extends Component{
     render() {

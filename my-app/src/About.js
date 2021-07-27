@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Logo from "./logo.png"
+import Logo from "./LOGO2.jpeg"
 
 class About extends Component{
     render(){
@@ -10,7 +10,7 @@ class About extends Component{
                 <div></div>
                 <h5  class="text-center"> CryptoBROKE.rs is a team of young software developers and crypto enthusiasts. </h5>
                 <div></div>
-                <div class="text-center"><img src={Logo} width="150" height="60" class="center" alt=""></img></div>
+                <div class="text-center"><img src={Logo} width="180" height="70" class="center" alt=""></img></div>
             </div>
             </div>
         )

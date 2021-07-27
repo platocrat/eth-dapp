@@ -498,7 +498,7 @@ class Home extends Component{
         this.setState({loading : false});
       }
     
-      async sendMail(campaignId) {
+      async sendMail(campaignId, curr_fund) {
         for(var i=0; i<this.virtualCamps.length; i++){
           if (this.virtualCamps[i].campaignId=campaignId){
             for(var j=0; j<this.virtualCamps[i].mails.length; j++){
@@ -506,7 +506,7 @@ class Home extends Component{
                 'to_email': this.virtualCamps[i].mails[j],
                 'campaign_name': this.virtualCamps[i].name,
                 'goal':this.virtualCamps[i].goal,
-                'curr_fund':this.virtualCamps[i].currFund
+                'curr_fund': curr_fund.toString()
               }
               console.log(params);
               emailjs.send('service_7pkwiug', 'template_fru8jpq', params).then(function(res) {
@@ -591,7 +591,7 @@ class Home extends Component{
         var currfund = await contract.currFund();
         var goal = await contract.goal();
         if((parseFloat(currfund,10) + parseFloat(amount,10))<parseFloat(goal)){
-          this.sendMail(campaignId);
+          this.sendMail(campaignId,parseFloat(currfund,10) + parseFloat(amount,10));
         }
         this.setState({loading : true});
       }

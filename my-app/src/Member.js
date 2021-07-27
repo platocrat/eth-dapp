@@ -392,7 +392,8 @@ class Login extends Component{
           recepient: "",
           memberAddress: "",
           email: "",
-          loading: true
+          loading: true,
+          notMember: false
         }
     
         
@@ -516,15 +517,17 @@ class Login extends Component{
       }
     
       async addCampaign(name, goal, description, user) {
+        
         console.log(this.contractOrg);
         user = '0x' + user;
         var signer = new ethers.Wallet(user, this.provider);
-        //var contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
+
         const orgContract = this.contractOrg.connect(signer);
         goal = ethers.utils.parseEther(goal);
         var parameters = {
           gasLimit: 0x7a1200
         }
+        
         var tx = await orgContract.addCampaign(name, goal, description, parameters);
         const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
         var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
@@ -647,7 +650,10 @@ class Login extends Component{
           <div className="card-body" style={{backgroundColor: color}}>
           <form className="mb-3" onSubmit={(event) => {
                 event.preventDefault()
-                this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser)
+                this.addCampaign(this.state.campName, this.state.campGoal, this.state.campDescription, this.state.campUser);
+                if (this.state.notMember == true){
+                  console.log("You are not a member");
+                }
               }}>
               <div class="form-group">
                 <h4 className="float-left bg-info "><b>CREATE CAMPAIGN</b></h4>
