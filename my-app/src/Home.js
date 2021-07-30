@@ -415,34 +415,11 @@ class Home extends Component{
         this.handleEmail = this.handleEmail.bind(this);
         this.handleMemberAddress = this.handleMemberAddress.bind(this);
         this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
-        this.signer = new ethers.Wallet('0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3', this.provider);
-        this.activeCampaigns = [new ethers.Contract("0x14159d166803E259F838771E4f5959a2Cf501F84", this.campAbi, this.provider)];
         this.finishedCampaigns = [];
         this.virtualCamps=[];
-        this.emails = {};
-        //await deploy(); 
-        
+
         this.contractOrg = new ethers.Contract("0x8936Fe51F2eA660e69cfd36F3Fe0DCDa3f9fEead", this.orgAbi, this.provider);
-        //this.contractOrg = this.contractOrg.connect(this.signer);
-        //this.addCampaign("bla",5000000,'0x8f024b952fcf28118b0a3073c0b7838711f06d52d4b0259f108be6ad57e825f3');
-    
-        /*const filter = {
-          address: this.contractOrg.address,
-          topics: [
-              // the name of the event, parnetheses containing the data type of each event, no spaces
-              ethers.utils.id("goalReached(uint,uint,string,address[])")
-          ]}*/
-          
-        const filter = {
-          address: "0x8921E155c34fdA42b1Fe7779b448C3ab457091b6",
-          fromBlock: 0,
-          topics: [ethers.utils.id("goalReached(uint,uint,string,address[])")]
-        };
-        this.logs = this.provider.getLogs(filter);
-        this.sleep = (milliseconds) => {
-          return new Promise(resolve => setTimeout(resolve, milliseconds))
-        }
-        //this.loadBlockchainData();
+        
     
       }
     
@@ -463,13 +440,7 @@ class Home extends Component{
             mails: []
           }
           var addr = await this.contractOrg.campaigns(i);
-          console.log(addr);
           var camp = new ethers.Contract(addr, this.campAbi, this.provider);
-          camp = camp.connect(this.signer);
-          camp.on("*", (from, to, value, event) => {
-            console.log("event: ", event);
-          });
-          console.log(camp)
           var name = await camp.name();
           var id = await camp.id();
           var currFund = await camp.currFund();
@@ -486,19 +457,16 @@ class Home extends Component{
           Campaign.id = id.toString();
           Campaign.currFund = ethers.utils.formatEther(currFund.toString());
           Campaign.goal = ethers.utils.formatEther(goal.toString());
-          if (Campaign.goal <= Campaign.currFund){
-            //this.sendMail(Campaign.id);
-          }
           Campaign.description = description.toString();
           Campaign.mails = mails;
           virtualCamps.push(Campaign);
         }
         this.virtualCamps = virtualCamps;
-        console.log(this.virtualCamps);
         this.setState({loading : false});
       }
     
       async sendMail(campaignId, curr_fund) {
+        var mails=[];
         for(var i=0; i<this.virtualCamps.length; i++){
           if (this.virtualCamps[i].campaignId=campaignId){
             for(var j=0; j<this.virtualCamps[i].mails.length; j++){
@@ -508,64 +476,22 @@ class Home extends Component{
                 'goal':this.virtualCamps[i].goal,
                 'curr_fund': curr_fund.toString()
               }
-              console.log(params);
-              emailjs.send('service_7pkwiug', 'template_fru8jpq', params).then(function(res) {
-              console.log('mail sent!');
-              } )
+              if (!mails.includes(this.virtualCamps[i].mails[j])){
+                mails.push(this.virtualCamps[i].mails[j]);
+                emailjs.send('service_7pkwiug', 'template_fru8jpq', params).then(function(res) {
+                console.log('mail sent!');
+                }); 
+              } 
             }
           }
         }
-        
-    
-        
         return 0;
       }
     
-      async addCampaign(name, goal, description, user) {
-        console.log(this.contractOrg);
-        user = '0x' + user;
-        var signer = new ethers.Wallet(user, this.provider);
-        //var contractOrg = new ethers.Contract("0xBA97C962B43fF8072e9de817b9FEB781E341b96c", this.orgAbi, this.provider);
-        const orgContract = this.contractOrg.connect(signer);
-        goal = ethers.utils.parseEther(goal);
-        var parameters = {
-          gasLimit: 0x7a1200
-        }
-        var tx = await orgContract.addCampaign(name, goal, description, parameters);
-        const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
-        var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
-        var Campaign = {
-          name: "",
-          id: "",
-          currFund: "",
-          goal: "",
-          description: ""
-        }
-        this.activeCampaigns.push(campaign);
-        const filter = {
-          address: campaign.address,
-          topics: [
-              // the name of the event, parnetheses containing the data type of each event, no spaces
-              ethers.utils.id("goalReached(uint,uint,string,address[])")
-          ]
-      }
-        //campaign.on(filter, this.campaignFinished);
-        console.log(tx);
-        console.log(this.logs);
-        this.setState({
-          campName: '',
-          campGoal: '',
-          campDescription: '',
-          campUser: '',
-          loading : true
-        });
-      }
     
-      async donate(campaignId, user, amount, email){
-        console.log(user)
-        console.log(amount)
-        user = '0x' + user;
-        var signer = new ethers.Wallet(user, this.provider);
+      async donate(campaignId, amount, email){
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
         var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
         contract = contract.connect(signer);
@@ -574,14 +500,6 @@ class Home extends Component{
           gasLimit: 0x7a120
         }
         var tx = await contract.donate(email,parameters);
-        if (this.emails[campaignId]){
-          this.emails[campaignId].push(email);
-        } else {
-          this.emails = {[campaignId] : [email]};
-        }
-        console.log(this.emails);
-        console.log(tx);
-        this.loadBlockchainData();
         this.setState({
           campId: "",
           address: "",
@@ -589,49 +507,21 @@ class Home extends Component{
           email: ""
         });
         var currfund = await contract.currFund();
+        currfund = ethers.utils.formatEther(currfund);
         var goal = await contract.goal();
-        if((parseFloat(currfund,10) + parseFloat(amount,10))<parseFloat(goal)){
-          this.sendMail(campaignId,parseFloat(currfund,10) + parseFloat(amount,10));
+        goal = ethers.utils.formatEther(goal);
+        amount = parseFloat(amount,10);
+        currfund = parseFloat(currfund,10);
+        goal = parseFloat(goal,10);
+        console.log(amount, goal, currfund);
+        if ((currfund + amount) >= goal){
+          let total = currfund + amount;
+          total = total.toString();
+          this.sendMail(campaignId, total);
         }
         this.setState({loading : true});
       }
-    
-      async withdraw(campaignId, recepient) {
-        var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
-        console.log(campAddress);
-        console.log(recepient);
-        console.log(parseInt(campaignId,10));
-        var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
-        var contract = contract.connect(this.signer);
-        var parameters = {
-          gasLimit: 0x7a1200
-        }
-        console.log(contract);
-        var tx = await contract.withdraw(recepient, parameters);
-        console.log(tx);
-        this.loadBlockchainData();
-        this.setState({
-          ID: '',
-          recepient: ''
-        });
-      }
-    
-      async campaignFinished() {
-        console.log("campaign finished");
-      }
-    
-      async addMember(memberAddress) {
-        const orgContract = this.contractOrg.connect(this.signer);
-        var parameters = {
-          gasLimit: 0x7a1200
-        }
-        var tx = await orgContract.addMember(memberAddress, parameters);
-        console.log(tx);
-        this.setState({
-          memberAddress: ''
-        });
-      }
-    
+
       handleCampId(event) {    this.setState({campId: event.target.value});  }  
       handleAddress(event) {    this.setState({address: event.target.value});  }
       handleValue(event) {    this.setState({value: event.target.value});  }
@@ -650,7 +540,7 @@ class Home extends Component{
 
     render(){
         const campList = () => {
-            console.log(this.loading);
+
             if (!this.state.loading){
             let content = [];
             console.log(this.virtualCamps);
@@ -684,7 +574,7 @@ class Home extends Component{
                 event.preventDefault()
                 let amount
                 amount = this.state.value.toString()
-                this.donate(this.state.campId,this.state.address, amount, this.state.email)
+                this.donate(this.state.campId, amount, this.state.email)
               }}>
               <div>
                 <h4 className="float-left bg-info"><b>DONATE </b></h4>
@@ -700,18 +590,6 @@ class Home extends Component{
                   className="form-control form-control-lg"
                   placeholder="Enter campaign ID (number)"
                   required />
-              </div>
-                <span className="float-right text-muted"> Your wallet private key: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.value = input }}
-                  value={this.state.address}
-                  onChange={this.handleAddress}
-                  className="form-control form-control-lg"
-                  placeholder="Enter your wallet private key (without 0x)"
-                  required />
-                  <small class="w-100 text-muted">Your wallet private key is safe with us :)</small>
               </div>
               <span className="float-right text-muted"> Amount: </span>
               <div className="input-group mb-4">
