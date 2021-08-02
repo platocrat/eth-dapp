@@ -1,4 +1,5 @@
 pragma solidity >=0.7.0 <0.9.0;
+pragma abicoder v2;
 
 contract Campaign {
     
@@ -22,7 +23,7 @@ contract Campaign {
         description = _description;
         owner = tx.origin;
     }
-    event goalReached(uint totalFund, uint campaignId, string name, address[] funders);
+    event goalReached(uint totalFund, uint goal, uint campaignId, string name, string[] mails);
     
     function donate(string memory _mail) public payable returns(bool sufficient) {
         if (tx.origin.balance < msg.value) return false;
@@ -33,7 +34,7 @@ contract Campaign {
         mailCount++;
         
         if (currFund >= goal) {
-            emit goalReached(currFund, id, name, funders);
+            emit goalReached(currFund, goal, id, name, mails);
             finished = true;
         }
         return true;

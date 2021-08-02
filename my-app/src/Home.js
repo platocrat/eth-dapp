@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
 import CampaignRow from "./campaignRow"
 import{ init } from 'emailjs-com';
-init("user_gzsTSWT9xHNSKVd7W1EDK");
+init("user_ZYwxMAlLHOgUNKO4wSLBm");
 const ethers = require('ethers'); 
 const color="#F9F3F3";
 
@@ -415,12 +415,14 @@ class Home extends Component{
         this.handleEmail = this.handleEmail.bind(this);
         this.handleMemberAddress = this.handleMemberAddress.bind(this);
         this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
+        //const url = "http://localhost:7545"
+        //this.provider = new ethers.providers.JsonRpcProvider(url);
         this.finishedCampaigns = [];
         this.virtualCamps=[];
         this.subscribed = new Set();
 
-
-        this.contractOrg = new ethers.Contract("0x8936Fe51F2eA660e69cfd36F3Fe0DCDa3f9fEead", this.orgAbi, this.provider);
+        
+        this.contractOrg = new ethers.Contract("0x1e63F0A7b75B80C3823522e91F2d58285ea1a201", this.orgAbi, this.provider);
       }
     
       async loadBlockchainData() {
@@ -466,7 +468,8 @@ class Home extends Component{
             ]
           }
           if (!this.subscribed.has(id._hex)) {
-            camp.on('goalReached', (totalFund, campaignId, name, adresses) => this.sendMail(campaignId, totalFund))
+            camp.on('goalReached', (totalFund, goal, campaignId, name, mails) => this.sendMail(campaignId, totalFund, goal, name, mails))
+            console.log(camp)
             console.log(this.subscribed)
             this.subscribed.add(id._hex)
           }
@@ -482,25 +485,23 @@ class Home extends Component{
         
       }
     
-      async sendMail(campaignId, curr_fund) {
-        var mails=[];
-        for(var i=0; i<this.virtualCamps.length; i++){
-          if (this.virtualCamps[i].campaignId=campaignId){
-            for(var j=0; j<this.virtualCamps[i].mails.length; j++){
-              var params = {
-                'to_email': this.virtualCamps[i].mails[j],
-                'campaign_name': this.virtualCamps[i].name,
-                'goal':this.virtualCamps[i].goal,
-                'curr_fund': curr_fund.toString()
-              }
-              if (!mails.includes(this.virtualCamps[i].mails[j])){
-                mails.push(this.virtualCamps[i].mails[j]);
-                emailjs.send('service_uthqgcf', 'template_ecyce4i', params).then(function(res) {
-                console.log('mail sent!');
-                }); 
-              } 
-            }
+      async sendMail(campaignId, curr_fund, goal, name, mails) {
+        var sent=[];
+        campaignId = campaignId.toString();
+        console.log("proslo");
+        for(var i=0; i<mails.length; i++){
+          var params = {
+            'to_email': mails[i],
+            'campaign_name': name,
+            'goal': ethers.utils.formatEther(goal),
+            'curr_fund': ethers.utils.formatEther(curr_fund)
           }
+          if (!sent.includes(mails[i])){
+            sent.push(mails[i]);
+            emailjs.send('service_mr0tweq', 'template_p2vca7b', params).then(function(res) {
+            console.log('mail sent!');
+            }); 
+          } 
         }
         return 0;
       }
@@ -536,7 +537,7 @@ class Home extends Component{
         //   total = total.toString();
         //   this.sendMail(campaignId, total);
         // }
-        this.setState({loading : true});
+        //this.setState({loading : true});
       }
 
       handleCampId(event) {    this.setState({campId: event.target.value});  }  

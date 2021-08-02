@@ -6,416 +6,420 @@ const color="#F9F3F3";
 
 class Login extends Component{
     
-    constructor(props) {
-        super(props);    
-        const { exit } = require('process');
-    
-        this.orgAbi = [
+  constructor(props) {
+    super(props);    
+    const { exit } = require('process');
+
+    this.orgAbi = [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "campaignCounter",
+        "outputs": [
           {
-            "inputs": [],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
-          },
-          {
-            "inputs": [],
-            "name": "campaignCounter",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "name": "campaigns",
-            "outputs": [
-              {
-                "internalType": "contract Campaign",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "name": "members",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          },
-          {
-            "inputs": [],
-            "name": "owner",
-            "outputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "string",
-                "name": "_name",
-                "type": "string"
-              },
-              {
-                "internalType": "uint256",
-                "name": "_goal",
-                "type": "uint256"
-              },
-              {
-                "internalType": "string",
-                "name": "_description",
-                "type": "string"
-              }
-            ],
-            "name": "addCampaign",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "_member",
-                "type": "address"
-              }
-            ],
-            "name": "addMember",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
           }
-        ];
-        this.campAbi = [
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
           {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "_id",
-                "type": "uint256"
-              },
-              {
-                "internalType": "string",
-                "name": "_name",
-                "type": "string"
-              },
-              {
-                "internalType": "uint256",
-                "name": "_goal",
-                "type": "uint256"
-              },
-              {
-                "internalType": "string",
-                "name": "_description",
-                "type": "string"
-              }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
-          },
-          {
-            "anonymous": false,
-            "inputs": [
-              {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "totalFund",
-                "type": "uint256"
-              },
-              {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "campaignId",
-                "type": "uint256"
-              },
-              {
-                "indexed": false,
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-              },
-              {
-                "indexed": false,
-                "internalType": "address[]",
-                "name": "funders",
-                "type": "address[]"
-              }
-            ],
-            "name": "goalReached",
-            "type": "event"
-          },
-          {
-            "inputs": [],
-            "name": "currFund",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "description",
-            "outputs": [
-              {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "finished",
-            "outputs": [
-              {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "name": "funders",
-            "outputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "name": "fundings",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "goal",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "id",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "mailCount",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "name": "mails",
-            "outputs": [
-              {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "name",
-            "outputs": [
-              {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "owner",
-            "outputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "string",
-                "name": "_mail",
-                "type": "string"
-              }
-            ],
-            "name": "donate",
-            "outputs": [
-              {
-                "internalType": "bool",
-                "name": "sufficient",
-                "type": "bool"
-              }
-            ],
-            "stateMutability": "payable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address payable",
-                "name": "_recipient",
-                "type": "address"
-              }
-            ],
-            "name": "withdraw",
-            "outputs": [
-              {
-                "internalType": "bool",
-                "name": "sufficient",
-                "type": "bool"
-              }
-            ],
-            "stateMutability": "payable",
-            "type": "function"
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
           }
-        ];
-    
-        this.state = {
-          campId: "",
-          address : "",
-          value : "",
-          campName : "",
-          campGoal : "",
-          campUser : "",
-          campDescription : "",
-          ID: "",
-          recepient: "",
-          memberAddress: "",
-          email: "",
-          loading: true,
-          notMember: false
-        }
-    
-        
-        this.loadBlockchainData = this.loadBlockchainData.bind(this);
-        this.handleCampId = this.handleCampId.bind(this);
-        this.handleAddress = this.handleAddress.bind(this);
-        this.handleValue = this.handleValue.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleName = this.handleName.bind(this);
-        this.handleGoal = this.handleGoal.bind(this);
-        this.handleUser = this.handleUser.bind(this);
-        this.handleDescription = this.handleDescription.bind(this);
-        this.handleRecepient = this.handleRecepient.bind(this);
-        this.handleID = this.handleID.bind(this);
-        this.handleEmail = this.handleEmail.bind(this);
-        this.handleMemberAddress = this.handleMemberAddress.bind(this);
-        this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
-        this.virtualCamps=[];
-        
-        this.contractOrg = new ethers.Contract("0x8936Fe51F2eA660e69cfd36F3Fe0DCDa3f9fEead", this.orgAbi, this.provider);
-    
+        ],
+        "name": "campaigns",
+        "outputs": [
+          {
+            "internalType": "contract Campaign",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "members",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_goal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_description",
+            "type": "string"
+          }
+        ],
+        "name": "addCampaign",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_member",
+            "type": "address"
+          }
+        ],
+        "name": "addMember",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       }
+    ];
+    this.campAbi = [
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_goal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_description",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "totalFund",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "campaignId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address[]",
+            "name": "funders",
+            "type": "address[]"
+          }
+        ],
+        "name": "goalReached",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "currFund",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "description",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "finished",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "funders",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "fundings",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "goal",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "id",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "mailCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "mails",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "name",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_mail",
+            "type": "string"
+          }
+        ],
+        "name": "donate",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "sufficient",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address payable",
+            "name": "_recipient",
+            "type": "address"
+          }
+        ],
+        "name": "withdraw",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "sufficient",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+      }
+    ];
+
+    this.state = {
+      campId: "",
+      address : "",
+      value : "",
+      campName : "",
+      campGoal : "",
+      campUser : "",
+      campDescription : "",
+      ID: "",
+      recepient: "",
+      memberAddress: "",
+      email: "",
+      loading: true
+    }
+
+    
+    //this.state = {value: ''};
+    this.loadBlockchainData = this.loadBlockchainData.bind(this);
+    this.handleCampId = this.handleCampId.bind(this);
+    this.handleAddress = this.handleAddress.bind(this);
+    this.handleValue = this.handleValue.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleName = this.handleName.bind(this);
+    this.handleGoal = this.handleGoal.bind(this);
+    this.handleUser = this.handleUser.bind(this);
+    this.handleDescription = this.handleDescription.bind(this);
+    this.handleRecepient = this.handleRecepient.bind(this);
+    this.handleID = this.handleID.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
+    this.handleMemberAddress = this.handleMemberAddress.bind(this);
+    this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
+    //const url = "http://localhost:7545"
+    //this.provider = new ethers.providers.JsonRpcProvider(url);
+    this.finishedCampaigns = [];
+    this.virtualCamps=[];
+    this.subscribed = new Set();
+
+    
+    this.contractOrg = new ethers.Contract("0x1e63F0A7b75B80C3823522e91F2d58285ea1a201", this.orgAbi, this.provider);
+    }
     
       async loadBlockchainData() {
         var parameters = {
@@ -469,7 +473,7 @@ class Login extends Component{
         var parameters = {
           gasLimit: 0x7a1200
         }
-        var tx = await orgContract.addCampaign(name, goal, description, parameters);
+        var tx = await orgContract.addCampaign(name, goal, description);
         const camp1 = await orgContract.campaigns(orgContract.campaignCounter());
         var campaign = new ethers.Contract(camp1, this.campAbi, this.provider);
         var Campaign = {
@@ -479,15 +483,7 @@ class Login extends Component{
           goal: "",
           description: ""
         }
-        /*const filter = {
-          address: campaign.address,
-          topics: [
-              // the name of the event, parnetheses containing the data type of each event, no spaces
-              ethers.utils.id("goalReached(uint,uint,string,address[])")
-          ]
-        }*/
-        //campaign.on(filter, this.campaignFinished);
-        campaign.on('goalReached', (totalFund, campaignId, name, adresses) => this.sendMail(campaignId, totalFund))
+        //campaign.on('goalReached', (totalFund, campaignId, name, adresses) => this.sendMail(campaignId, totalFund))
         this.setState({
           campName: '',
           campGoal: '',
