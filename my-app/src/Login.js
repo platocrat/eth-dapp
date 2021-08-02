@@ -640,29 +640,63 @@ class Login extends Component{
 
     render() {
         return(
-          <div id="content" className="mt-4">
-          
-                    <div className="card-body">
-          
-                    <form className="mb-3">
-                        <div>
-                          <h3 className="float-left"><b>LOGIN</b></h3>
-                        </div>
-                        <span className="float-right text-muted"> Your Wallet secret key: </span>
-                        <div className="input-group mb-4">
-                          <input
-                            type="text"
-                            //ref={(input) => { this.input.value = input }}
-                            value={this.state.address}
-                            onChange={this.handleAddress}
-                            className="form-control form-control-lg"
-                            placeholder="Enter your wallet secret key (without 0x)"
-                            required />
-                            </div>
-                    </form>
-                    <Link to="/member"> <button type="submit" className="btn btn-info btn-block btn-lg" disabled={!this.state.address}>LOGIN</button> </Link>
-                    </div>
-                    </div>
+          <div class="row">
+			<div class="col-md-12 mt-5">
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>Holy guacamole!</strong> You should check in on some of those fields below.
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+
+		  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+			  <strong>Permission denied!</strong> You are not a user!
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+				</div>
+				<form role="form">
+					<div class="form-group"> 
+						<label for="exampleInputEmail1">
+							Email address
+						</label>
+						<input type="email" class="form-control" id="exampleInputEmail1" />
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">
+							Password
+						</label>
+						<input type="password" class="form-control" id="exampleInputPassword1" />
+					</div>
+					<div class="form-group">
+						<label for="selectOrganisation"> Organisation </label>
+					<select class="form-select" aria-label="Default select example">
+  						<option selected>Select your organisation</option>
+  						<option value="1">One</option>
+  						<option value="2">Two</option>
+  						<option value="3">Three</option>
+					</select>
+						 
+						<label for="exampleInputFile">
+							File input
+						</label>
+						<input type="file" class="form-control-file" id="exampleInputFile" />
+						<p class="help-block">
+							Example block-level help text here.
+						</p>
+					</div>
+					<div class="checkbox">
+						 
+						<label>
+							<input type="checkbox" /> Check me out
+						</label>
+					</div> 
+					<button type="submit" class="btn btn-primary">
+						Submit
+					</button>
+				</form>
+			</div>
         );
     }
 }

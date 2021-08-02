@@ -24,6 +24,9 @@ class NavBar extends Component{
               <li class="nav-item">
               <a class="nav-link" href="/login"> Login </a>
               </li>
+              <li class="nav-item">
+              <a class="nav-link" href="/member"> Member </a>
+              </li>
             </ul>
           </div>
           <img src={Logo} width="135" height="50" class="pull-right" alt=""></img>
