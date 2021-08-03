@@ -27,6 +27,7 @@ var HDWalletProvider = require("truffle-hdwallet-provider");
 var infura_apikey = "7ca887e08278450e8c483689f51bec9e";
 var mnemonic = "hammer general bridge west october end fiber media behind depend average swamp";
 module.exports = {
+  contracts_build_directory: "../my-app/src/abis",
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
