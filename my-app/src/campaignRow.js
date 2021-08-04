@@ -1,6 +1,19 @@
 import React, { Component } from 'react'
+import { Button } from 'reactstrap'
+import ModalExample from './DonationForm';
+const ethers = require('ethers'); 
+
+
+
+
 
 class CampaignRow extends Component{
+    constructor(props) {
+        super()
+        this.props = props
+        console.log('kita')
+        console.log(this.props)
+    }
     render() {
         return (
 
@@ -24,7 +37,7 @@ class CampaignRow extends Component{
                         </div>
                     </p>
                     <p class="text-center">
-                        <a class="btn btn-primary" href="#">Donate!</a>
+                        <ModalExample campaignProps={this.props}></ModalExample>
                     </p>
                     <p class="card-text text-center"><small class="text-muted">3 days left</small></p>
                 </div>

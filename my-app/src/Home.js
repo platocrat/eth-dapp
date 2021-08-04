@@ -6,20 +6,246 @@ import CampaignRow from "./campaignRow"
 import{ init } from 'emailjs-com';
 import Campaign from "./abis/Campaign.json"
 import Organisation from "./abis/Organisation.json"
-import ORGANISATION_CONTRACT_ADDRESS from "./.env"
+import SwapExamples from "./abis/SwapExamples.json"
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
 init("user_ZYwxMAlLHOgUNKO4wSLBm");
 const ethers = require('ethers'); 
 const color="#F9F3F3";
 
 
+
 class Home extends Component{
 
     constructor(props) {
-        super(props);    
+        super(props);  
         const { exit } = require('process');
         this.campAbi = Campaign.abi;
         this.orgAbi = Organisation.abi;
-        
+        this.swapAbi = SwapExamples.abi;
+        this.genericERC20Abi = [
+          {
+              "constant": true,
+              "inputs": [],
+              "name": "name",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "string"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          },
+          {
+              "constant": false,
+              "inputs": [
+                  {
+                      "name": "_spender",
+                      "type": "address"
+                  },
+                  {
+                      "name": "_value",
+                      "type": "uint256"
+                  }
+              ],
+              "name": "approve",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "bool"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+          },
+          {
+              "constant": true,
+              "inputs": [],
+              "name": "totalSupply",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "uint256"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          },
+          {
+              "constant": false,
+              "inputs": [
+                  {
+                      "name": "_from",
+                      "type": "address"
+                  },
+                  {
+                      "name": "_to",
+                      "type": "address"
+                  },
+                  {
+                      "name": "_value",
+                      "type": "uint256"
+                  }
+              ],
+              "name": "transferFrom",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "bool"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+          },
+          {
+              "constant": true,
+              "inputs": [],
+              "name": "decimals",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "uint8"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          },
+          {
+              "constant": true,
+              "inputs": [
+                  {
+                      "name": "_owner",
+                      "type": "address"
+                  }
+              ],
+              "name": "balanceOf",
+              "outputs": [
+                  {
+                      "name": "balance",
+                      "type": "uint256"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          },
+          {
+              "constant": true,
+              "inputs": [],
+              "name": "symbol",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "string"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          },
+          {
+              "constant": false,
+              "inputs": [
+                  {
+                      "name": "_to",
+                      "type": "address"
+                  },
+                  {
+                      "name": "_value",
+                      "type": "uint256"
+                  }
+              ],
+              "name": "transfer",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "bool"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+          },
+          {
+              "constant": true,
+              "inputs": [
+                  {
+                      "name": "_owner",
+                      "type": "address"
+                  },
+                  {
+                      "name": "_spender",
+                      "type": "address"
+                  }
+              ],
+              "name": "allowance",
+              "outputs": [
+                  {
+                      "name": "",
+                      "type": "uint256"
+                  }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          },
+          {
+              "payable": true,
+              "stateMutability": "payable",
+              "type": "fallback"
+          },
+          {
+              "anonymous": false,
+              "inputs": [
+                  {
+                      "indexed": true,
+                      "name": "owner",
+                      "type": "address"
+                  },
+                  {
+                      "indexed": true,
+                      "name": "spender",
+                      "type": "address"
+                  },
+                  {
+                      "indexed": false,
+                      "name": "value",
+                      "type": "uint256"
+                  }
+              ],
+              "name": "Approval",
+              "type": "event"
+          },
+          {
+              "anonymous": false,
+              "inputs": [
+                  {
+                      "indexed": true,
+                      "name": "from",
+                      "type": "address"
+                  },
+                  {
+                      "indexed": true,
+                      "name": "to",
+                      "type": "address"
+                  },
+                  {
+                      "indexed": false,
+                      "name": "value",
+                      "type": "uint256"
+                  }
+              ],
+              "name": "Transfer",
+              "type": "event"
+          }
+      ];
         this.state = {
           campId: "",
           address : "",
@@ -37,7 +263,8 @@ class Home extends Component{
           setOpen: false,
           activeCamps : {},
           finishedCamps: {},
-          inactiveCamps: {}
+          inactiveCamps: {},
+          token: ""
         }
     
         
@@ -55,7 +282,8 @@ class Home extends Component{
         this.handleID = this.handleID.bind(this);
         this.handleEmail = this.handleEmail.bind(this);
         this.handleMemberAddress = this.handleMemberAddress.bind(this);
-        this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
+        this.handleToken = this.handleToken.bind(this);
+        this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
         //const url = "http://localhost:7545"
         //this.provider = new ethers.providers.JsonRpcProvider(url);
         this.finishedCampaigns = [];
@@ -63,7 +291,7 @@ class Home extends Component{
         this.subscribed = new Set();
 
         
-        this.contractOrg = new ethers.Contract("0xa6A796E62EBa24dA5Ab7fd6e427Ec933140F32B0", this.orgAbi, this.provider);
+        this.contractOrg = new ethers.Contract("0x1352c45912A4Cc40A60b6589F8e966E306D4F891", this.orgAbi, this.provider);
       }
     
       async loadBlockchainData() {
@@ -119,13 +347,46 @@ class Home extends Component{
             }
           }
 
-          this.setState({activeCamps : [activeCamps], finishedCamps: [finishedCamps], inactiveCamps: [inactiveCamps], loading: false});
+          this.setState({activeCamps : activeCamps, finishedCamps: finishedCamps, inactiveCamps: inactiveCamps, loading: false});
 
 
         }
         
 
         
+      }
+
+      async donate(campaignId, amount, email){
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        console.log(campaignId)
+        var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
+        console.log('kita0')
+        var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
+        console.log('kita1')
+        contract = contract.connect(signer);
+        console.log('kita2')
+        if (this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) > this.state.activeCamps[campaignId].goal){
+          return { result: false,
+                    message: "Amount too large - hard cap limitation, try a lower amount",
+                    value: [this.state.activeCamps[campaignId].goal.toNumber()-this.state.activeCamps[campaignId].currFund.toNumber()]}
+        }
+        console.log('kita3')
+
+        var parameters = {
+          value: ethers.utils.parseEther(amount),
+          gasLimit: 0x7a120
+        }
+        var tx = await contract.donate(email, parameters);
+        this.setState({
+          campId: "",
+          address: "",
+          value: "",
+          email: ""
+        });
+        return { result: true,
+          message: "Donation successful",
+          value: 0}
       }
     
       async sendMail(campaignId, curr_fund, goal, name, mails) {
@@ -149,33 +410,19 @@ class Home extends Component{
         return 0;
       }
     
-    
-      async donate(campaignId, amount, email){
+      async swap(amount, token){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
-        var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
-        contract = contract.connect(signer);
-        if (this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) > this.state.activeCamps[campaignId].goal){
-          return { result: false,
-                    message: "Amount too large - hard cap limitation, try a lower amount",
-                    value: [this.state.activeCamps[campaignId].goal.toNumber()-this.state.activeCamps[campaignId].currFund.toNumber()]}
-        }
-        var parameters = {
-          value: ethers.utils.parseEther(amount),
-          gasLimit: 0x7a120
-        }
-        var tx = await contract.donate(email, parameters);
-        this.setState({
-          campId: "",
-          address: "",
-          value: "",
-          email: ""
-        });
-        return { result: true,
-          message: "Donation successful",
-          value: 0}
+        var tokenContract = new ethers.Contract(token, this.genericERC20Abi, this.provider);
+        tokenContract = tokenContract.connect(signer);
+        var approval = await tokenContract.approve("0x30f5B320E93c6396Eb85CEBD1018cD11c6043f76", amount);
+        console.log(approval);
+        var swapContract = new ethers.Contract("0x30f5B320E93c6396Eb85CEBD1018cD11c6043f76", this.swapAbi, this.provider);
+        swapContract = swapContract.connect(signer);
+        var outAmount = await swapContract.swapExactInputSingle(amount, token, {gasLimit: 0x7a120});
+        console.log(outAmount);
       }
+      
 
       handleCampId(event) {    this.setState({campId: event.target.value});  }  
       handleAddress(event) {    this.setState({address: event.target.value});  }
@@ -187,6 +434,7 @@ class Home extends Component{
       handleID(event) {    this.setState({ID: event.target.value});  }
       handleRecepient(event) {    this.setState({recepient: event.target.value});  }
       handleEmail(event) {  this.setState({email: event.target.value}); }
+      handleToken(event) {  this.setState({token: event.target.value}); }
       handleMemberAddress(event) {    this.setState({memberAddress: event.target.value});  }
       handleSubmit(event) {
         alert('A name was submitted: ' + this.state.value);
@@ -195,16 +443,18 @@ class Home extends Component{
 
     render(){
         const campList = () => {
-
+            console.log(camps)
             if (!this.state.loading){
             let content = [];
-            for (var i = 0; i < this.virtualCamps.length; i++) {
-                content.push(<CampaignRow
-                name={this.virtualCamps[i].name}
-                id={this.virtualCamps[i].id}
-                currFund={this.virtualCamps[i].currFund}
-                goal={this.virtualCamps[i].goal}
-                description={this.virtualCamps[i].description} />);
+            var camps = this.state.activeCamps;
+            for (var [key,value] of Object.entries(camps)) {
+              content.push(<CampaignRow
+                name={value.name}
+                id={value.id}
+                currFund={value.currFund}
+                goal={value.goal}
+                description={value.description}
+                home={this}/>);
             }
             return content;
           }
@@ -261,7 +511,7 @@ class Home extends Component{
               </div> <a class="carousel-control-prev" href="#carousel-856309" data-slide="prev"><span class="carousel-control-prev-icon"></span> <span class="sr-only">Previous</span></a> <a class="carousel-control-next" href="#carousel-856309" data-slide="next"><span class="carousel-control-next-icon"></span> <span class="sr-only">Next</span></a>
             </div>
           </div>
-        
+      
       <h3 className="float-left"><b> CAMPAIGNS </b></h3>
       <div class="row">
         {campList()}
@@ -282,7 +532,9 @@ class Home extends Component{
       </div>
     </Collapse>
     </div>
-      </div>
+    
+            </div>
+
 
         
         )
