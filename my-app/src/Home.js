@@ -34,7 +34,10 @@ class Home extends Component{
           email: "",
           loading: true,
           open: false,
-          setOpen: false
+          setOpen: false,
+          activeCamps : {},
+          finishedCamps: {},
+          inactiveCamps: {}
         }
     
         
@@ -52,23 +55,21 @@ class Home extends Component{
         this.handleID = this.handleID.bind(this);
         this.handleEmail = this.handleEmail.bind(this);
         this.handleMemberAddress = this.handleMemberAddress.bind(this);
-        //this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
-        const url = "http://localhost:7545"
-        this.provider = new ethers.providers.JsonRpcProvider(url);
+        this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
+        //const url = "http://localhost:7545"
+        //this.provider = new ethers.providers.JsonRpcProvider(url);
         this.finishedCampaigns = [];
-        this.virtualCamps=[];
+        this.virtualCamps={};
         this.subscribed = new Set();
 
         
-        this.contractOrg = new ethers.Contract("0x78Dbe89e65545cA2D70979c5D5c15ce275121807", this.orgAbi, this.provider);
+        this.contractOrg = new ethers.Contract("0xa6A796E62EBa24dA5Ab7fd6e427Ec933140F32B0", this.orgAbi, this.provider);
       }
     
       async loadBlockchainData() {
-        var parameters = {
-          value: ethers.utils.parseEther('0.1'),
-          gasLimit: 0x7a1200
-        }
-        var virtualCamps=[];
+        var activeCamps = {};
+        var inactiveCamps = {};
+        var finishedCamps = {};
         var counter = await this.contractOrg.campaignCounter();
         for (let i = 1; i <= counter; i++) {
           var Campaign = {
@@ -77,7 +78,8 @@ class Home extends Component{
             currFund: "",
             goal: "",
             description: "",
-            mails: []
+            mails: [],
+            endTimeStamp: 0
           }
           var addr = await this.contractOrg.campaigns(i);
           var camp = new ethers.Contract(addr, this.campAbi, this.provider);
@@ -86,6 +88,10 @@ class Home extends Component{
           var currFund = await camp.currFund();
           var goal = await camp.goal();
           var description = await camp.description();
+          var finished = await camp.finished();
+          var block = await this.provider.getBlock("latest");
+          var currStamp = block.timestamp;
+          var endStamp = await camp.endTimeStamp();
           var mails = [];
           var counterMail = await camp.mailCount();
           for(var j=0; j<counterMail; j++){
@@ -98,23 +104,22 @@ class Home extends Component{
           Campaign.goal = ethers.utils.formatEther(goal.toString());
           Campaign.description = description.toString();
           Campaign.mails = mails;
-          virtualCamps.push(Campaign);
-          var filter = {
-            address: camp.address,
-            topics: [
-                ethers.utils.id("goalReached(uint,uint,string,address[])")
-            ]
-          }
-          if (!this.subscribed.has(id._hex)) {
-            camp.on('goalReached', (totalFund, goal, campaignId, name, mails) => this.sendMail(campaignId, totalFund, goal, name, mails))
-            console.log(camp)
-            console.log(this.subscribed)
-            this.subscribed.add(id._hex)
+          Campaign.endTimeStamp = endStamp;
+          if (currStamp > endStamp){
+            inactiveCamps[Campaign.id] = Campaign;
+          }else if(finished == true){
+            finishedCamps[Campaign.id] = Campaign;
+          }else{
+            activeCamps[Campaign.id] = Campaign;
+            if (!this.subscribed.has(id._hex)) {
+              camp.on('GoalReached', (totalFund, goal, campaignId, name, mails) => this.sendMail(campaignId, totalFund, goal, name, mails))
+              console.log(camp)
+              console.log(this.subscribed)
+              this.subscribed.add(id._hex)
+            }
           }
 
-          
-          this.virtualCamps = virtualCamps;
-          this.setState({loading : false});
+          this.setState({activeCamps : [activeCamps], finishedCamps: [finishedCamps], inactiveCamps: [inactiveCamps], loading: false});
 
 
         }
@@ -151,31 +156,25 @@ class Home extends Component{
         var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
         contract = contract.connect(signer);
+        if (this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) > this.state.activeCamps[campaignId].goal){
+          return { result: false,
+                    message: "Amount too large - hard cap limitation, try a lower amount",
+                    value: [this.state.activeCamps[campaignId].goal.toNumber()-this.state.activeCamps[campaignId].currFund.toNumber()]}
+        }
         var parameters = {
           value: ethers.utils.parseEther(amount),
           gasLimit: 0x7a120
         }
-        var tx = await contract.donate(email,parameters);
+        var tx = await contract.donate(email, parameters);
         this.setState({
           campId: "",
           address: "",
           value: "",
           email: ""
         });
-        var currfund = await contract.currFund();
-        currfund = ethers.utils.formatEther(currfund);
-        var goal = await contract.goal();
-        goal = ethers.utils.formatEther(goal);
-        amount = parseFloat(amount,10);
-        currfund = parseFloat(currfund,10);
-        goal = parseFloat(goal,10);
-        console.log(amount, goal, currfund);
-        // if ((currfund + amount) >= goal){
-        //   let total = currfund + amount;
-        //   total = total.toString();
-        //   this.sendMail(campaignId, total);
-        // }
-        //this.setState({loading : true});
+        return { result: true,
+          message: "Donation successful",
+          value: 0}
       }
 
       handleCampId(event) {    this.setState({campId: event.target.value});  }  
