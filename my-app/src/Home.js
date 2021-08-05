@@ -356,22 +356,33 @@ class Home extends Component{
         
       }
 
+      async swap(amount, token){
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        amount = ethers.utils.parseEther(amount);
+        console.log(amount);
+        var tokenContract = new ethers.Contract(token, this.genericERC20Abi, this.provider);
+        tokenContract = tokenContract.connect(signer);
+        var approval = await tokenContract.approve("0x41b857079e6b51512a97DA0C00998CeAe082209c", amount);
+        console.log(approval);
+        var swapContract = new ethers.Contract("0x41b857079e6b51512a97DA0C00998CeAe082209c", this.swapAbi, this.provider);
+        swapContract = swapContract.connect(signer);
+        var outAmount = await swapContract.swapExactInputSingle(amount, token, {gasLimit: 0x7a120});
+        console.log(outAmount);
+      }
+
       async donate(campaignId, amount, email){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         console.log(campaignId)
         var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
-        console.log('kita0')
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
-        console.log('kita1')
         contract = contract.connect(signer);
-        console.log('kita2')
         if (this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) > this.state.activeCamps[campaignId].goal){
           return { result: false,
                     message: "Amount too large - hard cap limitation, try a lower amount",
                     value: [this.state.activeCamps[campaignId].goal.toNumber()-this.state.activeCamps[campaignId].currFund.toNumber()]}
         }
-        console.log('kita3')
 
         var parameters = {
           value: ethers.utils.parseEther(amount),
@@ -443,11 +454,10 @@ class Home extends Component{
 
     render(){
         const campList = () => {
-            console.log(camps)
             if (!this.state.loading){
             let content = [];
             var camps = this.state.activeCamps;
-            for (var [key,value] of Object.entries(camps)) {
+            for (var [key,value] of Object.entries(this.state.inactiveCamps)) {
               content.push(<CampaignRow
                 name={value.name}
                 id={value.id}

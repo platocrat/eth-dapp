@@ -4,6 +4,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./4_SimpleNFT.sol";
 
 // SPDX-License-Identifier: MIT
 
@@ -22,6 +23,7 @@ contract Campaign {
     string[] public mails;
     uint public mailCount;
     uint public endTimeStamp;
+    SimpleNFT private nfts;
     
     constructor(uint _id, string memory _name, uint _goal, string memory _description, uint _endTimeStamp, address payable _beneficiary){
         id = _id;
@@ -31,6 +33,7 @@ contract Campaign {
         description = _description;
         owner = _beneficiary;
         endTimeStamp = _endTimeStamp;
+        nfts = new SimpleNFT();
     }
     event GoalReached(uint totalFund, uint goal, uint campaignId, string name, string[] mails);
     event Donated(uint amount, uint campaignId, string name, string mail);
@@ -49,6 +52,7 @@ contract Campaign {
             withdraw();
         }
         emit Donated(msg.value, id, name, _mail);
+        nfts.createSimpleNFT("https://ipfs.io/ipfs/Qmeuw3QFHBmVRx3K1owGreKx1PvCtrrnNDQi6vNw8oaQYT");
         return true;
         
         

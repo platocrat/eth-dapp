@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon, InputGroupText,
+  InputGroupButtonDropdown, DropdownMenu, DropdownToggle , DropdownItem, ButtonDropdown, Dropdown} from 'reactstrap';
 
 
 
 const ModalExample = (props) => {
   const {
     buttonLabel,
-    className
+    className,
   } = props;
 
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState('')
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(0);
+  const [currency, setCurrency] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [splitButtonOpen, setSplitButtonOpen] = useState(false);
+
+  const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
+
+  const toggleSplit = () => setSplitButtonOpen(!splitButtonOpen);
 
   const toggle = () => setModal(!modal);
   const handleEmailChange = (event) => {
@@ -20,8 +28,13 @@ const ModalExample = (props) => {
 
   const handleAmountChange = (event) => {
     setAmount(event.target.value)
-    console.log(props)
   }
+
+  const handleCurrencyChange = (event) => {
+    setCurrency(event.currentTarget.textContent)
+    console.log(currency)
+  }
+
 
   return (
     <div>
@@ -33,10 +46,17 @@ const ModalExample = (props) => {
             <FormGroup>
               <Label for="exampleEmail">Donation amount</Label>
                 <InputGroup>
-                <InputGroupAddon addonType="prep end">
-                  <InputGroupText>ETH</InputGroupText>
-                </InputGroupAddon>
-              <Input type="number" name="amount" min={0.0} id="amount" step='0.1' placeholder="0.00" onChange={handleAmountChange}/>
+                <Input type="number" name="amount" min={0.0} id="amount" step='0.1' placeholder="0.00" onChange={handleAmountChange}/>                
+                  <InputGroupButtonDropdown addonType="append" isOpen={dropdownOpen} toggle={toggleDropDown}>
+                  <DropdownToggle caret> {currency}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem onClick={handleCurrencyChange}> ETH </DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}> DAI </DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}> USDT </DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}> WETH </DropdownItem>
+                  </DropdownMenu>
+                  </InputGroupButtonDropdown>
               </InputGroup>
             </FormGroup>
             <FormGroup>
@@ -46,7 +66,7 @@ const ModalExample = (props) => {
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, 'pimpek')}>Donate</Button>{' '}
+          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency)}>Donate</Button>{' '}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
