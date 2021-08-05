@@ -289,9 +289,14 @@ class Home extends Component{
         this.finishedCampaigns = [];
         this.virtualCamps={};
         this.subscribed = new Set();
+        this.tokensDict = {
+          "DAI": "0xad6d458402f60fd3bd25163575031acdce07538d",
+          "WETH": "0xc778417e063141139fce010982780140aa0cd5ab",
+          "USDT": "0x110a13fc3efe6a245b50102d2d79b3e76125ae83"};
 
         
-        this.contractOrg = new ethers.Contract("0x1352c45912A4Cc40A60b6589F8e966E306D4F891", this.orgAbi, this.provider);
+        this.contractOrg = new ethers.Contract("0x10bC996cA4B399C0B6B5F48613e28BC04b2C88Cd", this.orgAbi, this.provider);
+        this.swapperAddress = "0xD33b688624E508a7A2375A13dA75b9D5A5814F41";
       }
     
       async loadBlockchainData() {
@@ -356,25 +361,33 @@ class Home extends Component{
         
       }
 
-      async swap(amount, token){
+      async swap(campaignId, amount, email, token){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        amount = ethers.utils.parseEther(amount);
+        var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
+        var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
+        contract = contract.connect(signer);
         console.log(amount);
+        amount = ethers.utils.parseEther(amount);
+        console.log(token);
         var tokenContract = new ethers.Contract(token, this.genericERC20Abi, this.provider);
         tokenContract = tokenContract.connect(signer);
-        var approval = await tokenContract.approve("0x41b857079e6b51512a97DA0C00998CeAe082209c", amount);
+        var approval = await tokenContract.approve(this.swapperAddress, amount);
         console.log(approval);
-        var swapContract = new ethers.Contract("0x41b857079e6b51512a97DA0C00998CeAe082209c", this.swapAbi, this.provider);
+        var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, this.provider);
         swapContract = swapContract.connect(signer);
-        var outAmount = await swapContract.swapExactInputSingle(amount, token, {gasLimit: 0x7a120});
+        var parameters = {
+          gasLimit: 0x7a120
+        };
+        var outAmount = await swapContract.swapExactInputSingle(amount, token, campAddress, parameters);
         console.log(outAmount);
       }
 
-      async donate(campaignId, amount, email){
+      async donate(campaignId, amount, email, currency){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         console.log(campaignId)
+        if (currency == "ETH") {
         var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
         contract = contract.connect(signer);
@@ -389,16 +402,22 @@ class Home extends Component{
           gasLimit: 0x7a120
         }
         var tx = await contract.donate(email, parameters);
-        this.setState({
-          campId: "",
-          address: "",
-          value: "",
-          email: ""
-        });
-        return { result: true,
-          message: "Donation successful",
-          value: 0}
+      } else {
+        currency = "DAI";
+        var token = this.tokensDict[currency];
+        console.log(token);
+        this.swap(campaignId, amount, email, token);
       }
+      this.setState({
+        campId: "",
+        address: "",
+        value: "",
+        email: ""
+      });
+      return { result: true,
+        message: "Donation successful",
+        value: 0}
+    }
     
       async sendMail(campaignId, curr_fund, goal, name, mails) {
         var sent=[];
@@ -419,19 +438,6 @@ class Home extends Component{
           } 
         }
         return 0;
-      }
-    
-      async swap(amount, token){
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        var tokenContract = new ethers.Contract(token, this.genericERC20Abi, this.provider);
-        tokenContract = tokenContract.connect(signer);
-        var approval = await tokenContract.approve("0x30f5B320E93c6396Eb85CEBD1018cD11c6043f76", amount);
-        console.log(approval);
-        var swapContract = new ethers.Contract("0x30f5B320E93c6396Eb85CEBD1018cD11c6043f76", this.swapAbi, this.provider);
-        swapContract = swapContract.connect(signer);
-        var outAmount = await swapContract.swapExactInputSingle(amount, token, {gasLimit: 0x7a120});
-        console.log(outAmount);
       }
       
 
@@ -457,7 +463,7 @@ class Home extends Component{
             if (!this.state.loading){
             let content = [];
             var camps = this.state.activeCamps;
-            for (var [key,value] of Object.entries(this.state.inactiveCamps)) {
+            for (var [key,value] of Object.entries(camps)) {
               content.push(<CampaignRow
                 name={value.name}
                 id={value.id}

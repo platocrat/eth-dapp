@@ -16,6 +16,7 @@ const ModalExample = (props) => {
   const [currency, setCurrency] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [splitButtonOpen, setSplitButtonOpen] = useState(false);
+  var token ="";
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
 
@@ -31,8 +32,8 @@ const ModalExample = (props) => {
   }
 
   const handleCurrencyChange = (event) => {
-    setCurrency(event.currentTarget.textContent)
-    console.log(currency)
+    setCurrency(event.target.textContent)
+    token = event.target.textContent;
   }
 
 
@@ -66,7 +67,7 @@ const ModalExample = (props) => {
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency)}>Donate</Button>{' '}
+          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, token)}>Donate</Button>{' '}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
