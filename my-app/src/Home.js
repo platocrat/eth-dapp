@@ -289,12 +289,40 @@ class Home extends Component{
         this.finishedCampaigns = [];
         this.virtualCamps={};
         this.subscribed = new Set();
+        this.tokenListURL = ["https://tokens.uniswap.org/","https://testnet.tokenlist.eth.link/"];
+        this.tokenListJSON = [];
         this.tokensDict = {
           "DAI": "0xad6d458402f60fd3bd25163575031acdce07538d",
           "WETH": "0xc778417e063141139fce010982780140aa0cd5ab",
           "USDT": "0x110a13fc3efe6a245b50102d2d79b3e76125ae83"};
-
-        
+        await this.tokenListURL.forEach(url => {
+          fetch(url).then(response => response.json())
+          .then((jsonData) => {
+            // jsonData is parsed json object received from url
+            console.log(jsonData)
+            this.tokenListJSON.push(jsonData);
+          })
+          .catch((error) => {
+            // handle your errors here
+            console.error(error)
+          });
+        });
+        this.tokenNames=[];
+        var cnt = this.tokenListURL.length;
+        console.log(cnt);
+        console.log(this.tokenListJSON);
+        for(var i=0;i<cnt;i++){
+            console.log(i);
+            var tokens = this.tokenListJSON[i].tokens;
+            console.log(tokens);
+            tokens.forEach(element => {
+              console.log(element);
+              if(element.chainId == '3'){
+                console.log("da");
+                this.tokensDict[element.symbol] = element.address;
+              }
+            });
+        }
         this.contractOrg = new ethers.Contract("0x95E40461CC68ee0eaB6b860D623b1605F0Af96Ee", this.orgAbi, this.provider);
         this.swapperAddress = "0x39A0ec0835E70CfFCf9FDDF9cF9B2F46e4a7Bbed";
       }
