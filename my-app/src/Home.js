@@ -295,8 +295,8 @@ class Home extends Component{
           "USDT": "0x110a13fc3efe6a245b50102d2d79b3e76125ae83"};
 
         
-        this.contractOrg = new ethers.Contract("0x10bC996cA4B399C0B6B5F48613e28BC04b2C88Cd", this.orgAbi, this.provider);
-        this.swapperAddress = "0xD33b688624E508a7A2375A13dA75b9D5A5814F41";
+        this.contractOrg = new ethers.Contract("0x95E40461CC68ee0eaB6b860D623b1605F0Af96Ee", this.orgAbi, this.provider);
+        this.swapperAddress = "0x39A0ec0835E70CfFCf9FDDF9cF9B2F46e4a7Bbed";
       }
     
       async loadBlockchainData() {
@@ -368,17 +368,19 @@ class Home extends Component{
         var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
         contract = contract.connect(signer);
         console.log(amount);
-        amount = ethers.utils.parseEther(amount);
         console.log(token);
         var tokenContract = new ethers.Contract(token, this.genericERC20Abi, this.provider);
         tokenContract = tokenContract.connect(signer);
-        var approval = await tokenContract.approve(this.swapperAddress, amount);
-        console.log(approval);
-        var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, this.provider);
-        swapContract = swapContract.connect(signer);
+        var decimals = await tokenContract.decimals();
+        amount = ethers.utils.parseUnits(amount, decimals);
         var parameters = {
           gasLimit: 0x7a120
         };
+        var approval = await tokenContract.approve(this.swapperAddress, amount, parameters);
+        console.log(approval);
+        var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, this.provider);
+        swapContract = swapContract.connect(signer);
+        
         var outAmount = await swapContract.swapExactInputSingle(amount, token, campAddress, parameters);
         console.log(outAmount);
       }
@@ -403,7 +405,6 @@ class Home extends Component{
         }
         var tx = await contract.donate(email, parameters);
       } else {
-        currency = "DAI";
         var token = this.tokensDict[currency];
         console.log(token);
         this.swap(campaignId, amount, email, token);

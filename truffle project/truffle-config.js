@@ -24,10 +24,10 @@
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 var HDWalletProvider = require("truffle-hdwallet-provider");
-var infura_apikey = "7ca887e08278450e8c483689f51bec9e";
+var infura_apikey = "52a080cad405419aa4318047bde7087f";
 var mnemonic = "hammer general bridge west october end fiber media behind depend average swamp";
 module.exports = {
-  contracts_build_directory: "../my-app/src/abis",
+  contracts_build_directory: "../my-app/src/abis",  
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -50,8 +50,8 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
     ropsten: {
-      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/0ea19bbf4c4d49518a0966666ff234f3"),
-      host: "https://ropsten.infura.io/v3/0ea19bbf4c4d49518a0966666ff234f",     // Localhost (default: none)
+      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f"),
+      host: "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "3",       // Any network (default: none)
      },
@@ -90,7 +90,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "^0.8.0",    // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.0",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {

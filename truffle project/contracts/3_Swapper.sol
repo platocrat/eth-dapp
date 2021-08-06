@@ -7,6 +7,7 @@ import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./1_Campaign.sol";
 import "./WETH.sol";
+import "./WETH9.sol";
 
 contract SwapExamples {
 
@@ -16,32 +17,26 @@ contract SwapExamples {
     // For this example, we will set the pool fee to 0.3%.
     uint24 public constant poolFee = 3000;
     address public constant DAI = 0xaD6D458402F60fD3Bd25163575031ACDce07538D;
-    address public constant WETH10_addr = 0xf1acf4697ef35f0edd2cf0bc352d4be94b6220f5;
+    address public constant WETH10_addr = 0xF1acf4697EF35F0edD2Cf0BC352d4be94B6220f5;
+    address public constant WETH9_addr = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
 
     constructor(ISwapRouter _swapRouter) {
         swapRouter = _swapRouter;
     }
+    fallback() external payable {}
 
-    /// @notice swapExactInputSingle swaps a fixed amount of DAI for a maximum possible amount of WETH9
-    /// using the DAI/WETH9 0.3% pool by calling `exactInputSingle` in the swap router.
-    /// @dev The calling address must approve this contract to spend at least `amountIn` worth of its DAI for this function to succeed.
-    /// @param amountIn The exact amount of DAI that will be swapped for WETH9.
-    /// @return amountOut The amount of WETH9 received.
     function swapExactInputSingle(uint256 amountIn, address _token, address payable _campaign) external returns (uint256 amountOut) {
         // msg.sender must approve this contract
-
-        // Transfer the specified amount of DAI to this contract.
         TransferHelper.safeTransferFrom(_token, msg.sender, address(this), amountIn);
-
-        // Approve the router to spend DAI.
-        TransferHelper.safeApprove(_token, address(swapRouter), amountIn);
+        if (_token != WETH9_addr){
+            TransferHelper.safeApprove(_token, address(swapRouter), amountIn);
 
         // Naively set amountOutMinimum to 0. In production, use an oracle or other data source to choose a safer value for amountOutMinimum.
         // We also set the sqrtPriceLimitx96 to be 0 to ensure we swap our exact input amount.
         ISwapRouter.ExactInputSingleParams memory params =
             ISwapRouter.ExactInputSingleParams({
                 tokenIn: _token,
-                tokenOut: WETH10_addr,
+                tokenOut: WETH9_addr,
                 fee: poolFee,
                 recipient: address(this),
                 deadline: block.timestamp,
@@ -52,7 +47,11 @@ contract SwapExamples {
 
         // The call to `exactInputSingle` executes the swap.
         amountOut = swapRouter.exactInputSingle(params);
-        IWETH10 weth = IWETH10(WETH10_addr);
+        }else{
+            amountOut = amountIn;
+        }
+        
+        IWETH weth = IWETH(WETH9_addr);
         weth.withdraw(amountOut);
         Campaign camp = Campaign(_campaign);
         camp.donate{value: amountOut}("karlo.v.cihlar@gmail.com");
@@ -60,12 +59,6 @@ contract SwapExamples {
         return amountOut;
     }
 
-    /// @notice swapExactOutputSingle swaps a minimum possible amount of DAI for a fixed amount of WETH.
-    /// @dev The calling address must approve this contract to spend its DAI for this function to succeed. As the amount of input DAI is variable,
-    /// the calling address will need to approve for a slightly higher amount, anticipating some variance.
-    /// @param amountOut The exact amount of WETH9 to receive from the swap.
-    /// @param amountInMaximum The amount of DAI we are willing to spend to receive the specified amount of WETH9.
-    /// @return amountIn The amount of DAI actually spent in the swap.
     function swapExactOutputSingle(uint256 amountOut, uint256 amountInMaximum, address payable _token) external returns (uint256 amountIn) {
         // Transfer the specified amount of DAI to this contract.
         TransferHelper.safeTransferFrom(_token, msg.sender, address(this), amountInMaximum);

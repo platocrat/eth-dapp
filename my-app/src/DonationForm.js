@@ -32,7 +32,8 @@ const ModalExample = (props) => {
   }
 
   const handleCurrencyChange = (event) => {
-    setCurrency(event.target.textContent)
+    setCurrency(event.target.textContent);
+    console.log(currency);
     token = event.target.textContent;
   }
 
@@ -52,22 +53,22 @@ const ModalExample = (props) => {
                   <DropdownToggle caret> {currency}
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem onClick={handleCurrencyChange}> ETH </DropdownItem>
-                    <DropdownItem onClick={handleCurrencyChange}> DAI </DropdownItem>
-                    <DropdownItem onClick={handleCurrencyChange}> USDT </DropdownItem>
-                    <DropdownItem onClick={handleCurrencyChange}> WETH </DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}>ETH</DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}>DAI</DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}>USDT</DropdownItem>
+                    <DropdownItem onClick={handleCurrencyChange}>WETH</DropdownItem>
                   </DropdownMenu>
                   </InputGroupButtonDropdown>
               </InputGroup>
             </FormGroup>
             <FormGroup>
-              <Label for="email">Get notified about the outcome of {props.name}</Label>
+              <Label for="email">Enter your email</Label>
               <Input type="email" name="email" id="email" placeholder="example@acme.com" onChange={handleEmailChange}/>
             </FormGroup>
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, token)}>Donate</Button>{' '}
+          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency)}>Donate</Button>{' '}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>

@@ -44,15 +44,15 @@ class Login extends Component{
     this.handleID = this.handleID.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handleMemberAddress = this.handleMemberAddress.bind(this);
-    //this.provider = new ethers.providers.InfuraProvider("ropsten", "0ea19bbf4c4d49518a0966666ff234f3"); 
-    const url = "http://localhost:7545"
-    this.provider = new ethers.providers.JsonRpcProvider(url);
+    //this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
+    //const url = "http://localhost:7545"
+    //this.provider = new ethers.providers.JsonRpcProvider(url);
     this.finishedCampaigns = [];
     this.virtualCamps=[];
     this.subscribed = new Set();
 
     
-    this.contractOrg = new ethers.Contract("0xa6A796E62EBa24dA5Ab7fd6e427Ec933140F32B0", this.orgAbi, this.provider);
+    this.contractOrg = new ethers.Contract("0xAc7612eF6e9A1c161D36C1472f85Fb6a46EEfA86", this.orgAbi, this.provider);
     }
     
       async loadBlockchainData() {

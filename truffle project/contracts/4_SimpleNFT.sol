@@ -13,9 +13,10 @@ contract SimpleNFT is ERC721 {
   function createSimpleNFT(string memory tokenURI) public returns (uint256) {
     uint256 newItemId = tokenCounter;
     _safeMint(tx.origin, newItemId);
-    _setTokenURI(newItemId, tokenURI);
     tokenCounter = tokenCounter + 1;
     return newItemId;
   }
 
 }
+
+//_setTokenURI(newItemId, tokenURI);
