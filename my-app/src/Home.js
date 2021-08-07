@@ -375,8 +375,9 @@ class Home extends Component{
             activeCamps[Campaign.id] = Campaign;
             if (!this.subscribed.has(id._hex)) {
               camp.on('GoalReached', (totalFund, goal, campaignId, name, mails) => this.sendMail(campaignId, totalFund, goal, name, mails))
-              console.log(camp)
-              console.log(this.subscribed)
+              camp.on('Donated', (amount, campaignId, name, mail) => {
+                  this.donatedMail(amount, campaignId, name, mail);
+                  this.setState({loading: true});})
               this.subscribed.add(id._hex)
             }
           }
@@ -467,6 +468,21 @@ class Home extends Component{
             }); 
           } 
         }
+        return 0;
+      }
+
+      async donatedMail(amount, campaignId, name, mail){
+        var sent=[];
+        campaignId = campaignId.toString();
+        console.log("proslo");
+        var params = {
+          'to_email': mail,
+          'campaign_name': name,
+          'amount': ethers.utils.formatEther(amount)
+        }
+        emailjs.send('service_mr0tweq', 'template_cscp88f', params).then(function(res) {
+          console.log('mail sent!');
+        }); 
         return 0;
       }
       

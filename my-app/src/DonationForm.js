@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon, InputGroupText,
-  InputGroupButtonDropdown, DropdownMenu, DropdownToggle , DropdownItem, ButtonDropdown, Dropdown} from 'reactstrap';
+  InputGroupButtonDropdown, DropdownMenu, DropdownToggle , DropdownItem, ButtonDropdown, Dropdown, Spinner} from 'reactstrap';
 
 
 
@@ -8,6 +8,7 @@ const ModalExample = (props) => {
   const {
     buttonLabel,
     className,
+    loadingChange
   } = props;
 
   const [modal, setModal] = useState(false);
@@ -17,6 +18,7 @@ const ModalExample = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [splitButtonOpen, setSplitButtonOpen] = useState(false);
   var token ="";
+  var spinner = null;
 
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
 
@@ -75,7 +77,7 @@ const ModalExample = (props) => {
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency)}>Donate</Button>{' '}
+          <Button color="primary" disabled={!email | !amount} onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency)}>Donate</Button>{' '}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>

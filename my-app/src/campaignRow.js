@@ -13,7 +13,7 @@ class CampaignRow extends Component{
     render() {
         return (
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card">
                 <img class="card-img-top" alt="Bootstrap Thumbnail First" src="https://www.layoutit.com/img/people-q-c-600-200-1.jpg" />
                 <div class="card-block">
