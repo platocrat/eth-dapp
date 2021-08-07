@@ -15,6 +15,7 @@ class CampaignRow extends Component{
 
         <div class="col-md-3">
             <div class="card">
+            <a style={{ textDecoration: 'none', color: 'black'}} href="/about">
                 <img class="card-img-top" alt="Bootstrap Thumbnail First" src="https://www.layoutit.com/img/people-q-c-600-200-1.jpg" />
                 <div class="card-block">
                     <h5 class="card-header text-center">
@@ -37,6 +38,7 @@ class CampaignRow extends Component{
                     </p>
                     <p class="card-text text-center"><small class="text-muted">End date: {this.props.endStamp}, {this.props.daysLeft} days left</small></p>
                 </div>
+                </a>
             </div>
         </div>
 
@@ -45,20 +47,3 @@ class CampaignRow extends Component{
 }
 
 export default CampaignRow;
-
-/*
-
-<div class="card text-center w-50">
-<div class="card-header text-white bg-info"><b>
-campaign ID: {this.props.id}</b>
-</div>
-<div class="card-body">
-  <h5 class="card-title">{this.props.name}</h5>
-  <p class="card-text">Description: {this.props.description}</p>
-</div>
-<div class="card-footer text-primary"><b>
-{this.props.currFund} / {this.props.goal} ETH </b>
-</div>
-</div>
-
-*/

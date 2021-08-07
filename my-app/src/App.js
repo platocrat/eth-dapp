@@ -5,6 +5,7 @@ import About from "./About"
 import Login from "./Login"
 import NavBar from "./NavBar"
 import Member from "./Member"
+import CampaignDetails from "./CampaignDetails"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import {BrowserRouter, Route, Link} from "react-router-dom"
 import { ApolloClient } from "apollo-client";
@@ -25,7 +26,8 @@ function App() {
       <NavBar />
       <Route exact path="/" component={Home} />
       <Route exact path="/login" component={Login} />
-      <Route exact path="/about" component={About} />
+      <Route exact path="/about2" component={About} />
+      <Route exact path="/about" component={CampaignDetails} />
     <Route exact path="/member" component={Member} />
     </BrowserRouter>
 </div>
