@@ -37,6 +37,15 @@ const ModalExample = (props) => {
     token = event.target.textContent;
   }
 
+  const tokenList = () => {
+    var tokens = props.campaignProps.home.tokensDict;
+    var content = [];
+    for (var [key,value] of Object.entries(tokens)) {
+      content.push(<DropdownItem onClick={handleCurrencyChange}>
+        {key}</DropdownItem>)
+    }
+    return content;
+  }
 
   return (
     <div>
@@ -52,11 +61,9 @@ const ModalExample = (props) => {
                   <InputGroupButtonDropdown addonType="append" isOpen={dropdownOpen} toggle={toggleDropDown}>
                   <DropdownToggle caret> {currency}
                   </DropdownToggle>
-                  <DropdownMenu>
+                  <DropdownMenu  style={{ maxHeight: "150px", overflow:"scroll"}}>
                     <DropdownItem onClick={handleCurrencyChange}>ETH</DropdownItem>
-                    <DropdownItem onClick={handleCurrencyChange}>DAI</DropdownItem>
-                    <DropdownItem onClick={handleCurrencyChange}>USDT</DropdownItem>
-                    <DropdownItem onClick={handleCurrencyChange}>WETH</DropdownItem>
+                    {tokenList()}
                   </DropdownMenu>
                   </InputGroupButtonDropdown>
               </InputGroup>

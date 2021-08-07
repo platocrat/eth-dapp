@@ -302,36 +302,24 @@ class Home extends Component{
 
       async loadTokenList() {
         var timer = null;
-        await this.tokenListURL.forEach(url => {
-          fetch(url).then(response => response.json())
-          .then((jsonData) => {
-            // jsonData is parsed json object received from url
-            console.log(jsonData)
-            this.tokenListJSON.push(jsonData);
-          })
-          .catch((error) => {
-            // handle your errors here
-            console.error(error)
-          });
-        });
-        this.tokenNames=[];
-        var cnt = this.tokenListURL.length;
-        console.log(cnt);
-
-        //const timer = setTimeout(() => {
-          for(var i=0;i<cnt;i++){
-            this.tokenListJSON[i].forEach(element => {
-              console.log(element);
-              if(element.chainId == '3'){
-                console.log("da");
-                this.tokensDict[element.symbol] = element.address;
-              }
-            });
+        await this.tokenListURL.forEach(url => {
+        fetch(url).then(response => response.json())
+        .then((jsonData) => {
+                    // jsonData is parsed json object received from url
+        console.log(jsonData)
+        this.tokenListJSON.push(jsonData);
+        jsonData.tokens.forEach(element => {
+          if(element.chainId == '3'){
+            this.tokensDict[element.symbol] = element.address;
           }
-        //}, 3500);
-        //clearTimeout(timer);
-        console.log(this.tokenListJSON);
-
+        });
+        })
+        .catch((error) => {
+                    // handle your errors here
+        console.error(error)
+        });
+        });
+        console.log(this.tokensDict);
       }
     
       async loadBlockchainData() {
