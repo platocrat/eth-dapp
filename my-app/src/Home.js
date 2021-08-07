@@ -348,6 +348,11 @@ class Home extends Component{
           var block = await this.provider.getBlock("latest");
           var currStamp = block.timestamp;
           var endStamp = await camp.endTimeStamp();
+          const date = Math.floor(new Date(endStamp*1000));
+          const date2 = new Date(endStamp*1000);
+          const currDate = Math.floor(new Date());
+          var daysLeft = Math.ceil(new Date(date - currDate) / (24 * 60 * 60 * 1000));
+          endStamp = date2.toLocaleDateString("en-GB");
           var mails = [];
           var counterMail = await camp.mailCount();
           for(var j=0; j<counterMail; j++){
@@ -361,6 +366,7 @@ class Home extends Component{
           Campaign.description = description.toString();
           Campaign.mails = mails;
           Campaign.endTimeStamp = endStamp;
+          Campaign.daysLeft = daysLeft;
           if (currStamp > endStamp){
             inactiveCamps[Campaign.id] = Campaign;
           }else if(finished == true){
@@ -494,6 +500,8 @@ class Home extends Component{
                 currFund={value.currFund}
                 goal={value.goal}
                 description={value.description}
+                endStamp={value.endTimeStamp}
+                daysLeft={value.daysLeft}
                 home={this}/>);
             }
             return content;
@@ -556,25 +564,7 @@ class Home extends Component{
       <div class="row">
         {campList()}
       </div>
-      <div>
-      <Button
-      onClick={() => {this.state.setOpen = !this.state.open}}
-      aria-controls="example-collapse-text"
-      aria-expanded={this.state.open}
-    >
-      click
-    </Button>
-    <Collapse in={this.state.open}>
-      <div id="example-collapse-text">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
-        terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer
-        labore wes anderson cred nesciunt sapiente ea proident.
-      </div>
-    </Collapse>
     </div>
-    
-            </div>
-
 
         
         )

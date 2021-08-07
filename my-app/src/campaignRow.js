@@ -4,16 +4,12 @@ import ModalExample from './DonationForm';
 const ethers = require('ethers'); 
 
 
-
-
-
 class CampaignRow extends Component{
     constructor(props) {
         super()
         this.props = props
-        console.log('kita')
-        console.log(this.props)
     }
+
     render() {
         return (
 
@@ -29,17 +25,17 @@ class CampaignRow extends Component{
                     </p>
                     <p class="card-text text-center">
                         <small>
-                        {this.props.currFund} / {this.props.goal} ETH 
+                        {parseFloat(this.props.currFund).toFixed(3)} / {this.props.goal} ETH 
                         </small>
                     </p>
                     <p class="progress">
-                        <div class="progress-bar w-75"> blabla
+                        <div class="progress-bar w-75"> {parseFloat(100*(this.props.currFund / this.props.goal)).toFixed(2)}%
                         </div>
                     </p>
                     <p class="text-center">
                         <ModalExample campaignProps={this.props}></ModalExample>
                     </p>
-                    <p class="card-text text-center"><small class="text-muted">3 days left</small></p>
+                    <p class="card-text text-center"><small class="text-muted">End date: {this.props.endStamp}, {this.props.daysLeft} days left</small></p>
                 </div>
             </div>
         </div>
