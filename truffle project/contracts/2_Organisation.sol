@@ -18,10 +18,11 @@ contract Organisation {
     address public owner;
     mapping(address => uint) public members;
     mapping(uint => Campaign) public campaigns;
-    
-    constructor(){
+    address public nft;
+    constructor(address _nft){
         owner = msg.sender;
         members[owner] = 1;
+        nft = _nft;
     }
     
     
@@ -29,7 +30,7 @@ contract Organisation {
         require(members[msg.sender] == 1);
         require(_endTimestamp > block.timestamp, "Organisation::addCampaign: Campaign must end in the future");
         campaignCounter ++;
-        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description, _endTimestamp, _beneficiary);
+        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description, _endTimestamp, _beneficiary, nft);
     }
     
     function addMember(address _member) public {

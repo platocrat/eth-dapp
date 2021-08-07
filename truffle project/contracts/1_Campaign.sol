@@ -23,9 +23,9 @@ contract Campaign {
     string[] public mails;
     uint public mailCount;
     uint public endTimeStamp;
-    SimpleNFT private nfts;
+    SimpleNFT public nfts;
     
-    constructor(uint _id, string memory _name, uint _goal, string memory _description, uint _endTimeStamp, address payable _beneficiary){
+    constructor(uint _id, string memory _name, uint _goal, string memory _description, uint _endTimeStamp, address payable _beneficiary, address _nft){
         id = _id;
         name = _name;
         currFund = 0;
@@ -33,7 +33,7 @@ contract Campaign {
         description = _description;
         owner = _beneficiary;
         endTimeStamp = _endTimeStamp;
-        nfts = new SimpleNFT();
+        nfts = SimpleNFT(_nft);
     }
     event GoalReached(uint totalFund, uint goal, uint campaignId, string name, string[] mails);
     event Donated(uint amount, uint campaignId, string name, string mail);

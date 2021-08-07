@@ -295,6 +295,13 @@ class Home extends Component{
           "DAI": "0xad6d458402f60fd3bd25163575031acdce07538d",
           "WETH": "0xc778417e063141139fce010982780140aa0cd5ab",
           "USDT": "0x110a13fc3efe6a245b50102d2d79b3e76125ae83"};
+        this.contractOrg = new ethers.Contract("0x910775E150224bEe9ADDd4A519aCAB85eE22aa64", this.orgAbi, this.provider);
+        this.swapperAddress = "0x6cA17f42B071311d9564cA1683cbe0cf3a15a01B";
+        this.loadTokenList();
+      }
+
+      async loadTokenList() {
+        var timer = null;
         await this.tokenListURL.forEach(url => {
           fetch(url).then(response => response.json())
           .then((jsonData) => {
@@ -310,21 +317,21 @@ class Home extends Component{
         this.tokenNames=[];
         var cnt = this.tokenListURL.length;
         console.log(cnt);
-        console.log(this.tokenListJSON);
-        for(var i=0;i<cnt;i++){
-            console.log(i);
-            var tokens = this.tokenListJSON[i].tokens;
-            console.log(tokens);
-            tokens.forEach(element => {
+
+        //const timer = setTimeout(() => {
+          for(var i=0;i<cnt;i++){
+            this.tokenListJSON[i].forEach(element => {
               console.log(element);
               if(element.chainId == '3'){
                 console.log("da");
                 this.tokensDict[element.symbol] = element.address;
               }
             });
-        }
-        this.contractOrg = new ethers.Contract("0x95E40461CC68ee0eaB6b860D623b1605F0Af96Ee", this.orgAbi, this.provider);
-        this.swapperAddress = "0x39A0ec0835E70CfFCf9FDDF9cF9B2F46e4a7Bbed";
+          }
+        //}, 3500);
+        //clearTimeout(timer);
+        console.log(this.tokenListJSON);
+
       }
     
       async loadBlockchainData() {
