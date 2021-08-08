@@ -8,7 +8,6 @@ const ModalExample = (props) => {
   const {
     buttonLabel,
     className,
-    loadingChange
   } = props;
 
   const [modal, setModal] = useState(false);
@@ -17,9 +16,9 @@ const ModalExample = (props) => {
   const [currency, setCurrency] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [splitButtonOpen, setSplitButtonOpen] = useState(false);
+  const [spinner, setSpinner] = useState(false);
   var token ="";
-  var spinner = null;
-
+  const loading = props.campaignProps.home.state.loading;
   const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
 
   const toggleSplit = () => setSplitButtonOpen(!splitButtonOpen);
@@ -48,11 +47,13 @@ const ModalExample = (props) => {
     }
     return content;
   }
+  console.log(!loading);
+  console.log(modal);
 
   return (
     <div>
       <Button color="primary" onClick={toggle}>Donate</Button>
-      <Modal isOpen={modal} toggle={toggle} className={className}>
+      <Modal isOpen={modal & !loading} toggle={toggle} className={className}>
         <ModalHeader toggle={toggle}>{props.name}</ModalHeader>
         <ModalBody>
           <Form>
@@ -77,7 +78,11 @@ const ModalExample = (props) => {
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" disabled={!email | !amount} onClick={() => props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency)}>Donate</Button>{' '}
+          {spinner && <Spinner color="primary" children=""/>}
+          <Button color="primary" disabled={!email | !amount | spinner} onClick={() => {props.campaignProps.home.donate(props.campaignProps.id, amount, email, currency);
+                    console.log(loading);
+                    console.log(modal);
+                    setSpinner(true);}}>Donate</Button>{' '}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
