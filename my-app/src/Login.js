@@ -384,33 +384,66 @@ const Login = () => {
 
   return (
     <div>
-      {loading === false && <h1><br></br>Login</h1>}
-      {errors === true && <h2>Cannot log in with provided credentials</h2>}
-      {loading === false && (
-        <form onSubmit={onSubmit}>
-          <label htmlFor='email'>Email address:</label> <br />
-          <input
-            name='email'
-            type='email'
-            value={email}
-            required
-            onChange={e => setEmail(e.target.value)}
-          />{' '}
-          <br />
-          <label htmlFor='password'>Password:</label> <br />
-          <input
-            name='password'
-            type='password'
-            value={password}
-            required
-            onChange={e => setPassword(e.target.value)}
-          />{' '}
-          <br />
-          <input type='submit' value='Login' />
-        </form>
-      )}
+    {loading === false && <h1><br></br>Login</h1>}
+    {errors === true && <h2>Cannot log in with provided credentials</h2>}
+    {loading === false && (
+      <form onSubmit={onSubmit}>
+
+    <div className="form-group">
+    <label htmlFor='email'>Email address:</label> <br />
+    <input
+          name='email'
+          type='email'
+          value={email}
+          required
+          onChange={e => setEmail(e.target.value)}
+          className="form-control"
+        />{' '}
+        <br />
     </div>
-  );
+
+    <div className="form-group">
+      <label htmlFor='password'>Password:</label> <br />
+      <input
+          name='password'
+          type='password'
+          value={password}
+          required
+          onChange={e => setPassword(e.target.value)}
+          className="form-control"
+        />{' '}
+        <br />
+    </div>
+
+    <button type="submit" className="btn btn-primary btn-block">Submit</button>
+</form>
+)}
+</div>
+);
 };
 
 export default Login;
+
+/*
+
+<div>
+    {loading === false && <h1><br></br>Login</h1>}
+    {errors === true && <h2>Cannot log in with provided credentials</h2>}
+    {loading === false && (
+      <form onSubmit={onSubmit}>
+        <label htmlFor='email'>Email address:</label> <br />
+
+        <label htmlFor='password'>Password:</label> <br />
+        <input
+          name='password'
+          type='password'
+          value={password}
+          required
+          onChange={e => setPassword(e.target.value)}
+        />{' '}
+        <br />
+        <input type='submit' value='Login' />
+      </form>
+    )}
+  </div> 
+  */

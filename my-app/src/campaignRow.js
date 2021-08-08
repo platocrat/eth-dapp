@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Link } from 'react'
 import { Button } from 'reactstrap'
 import ModalExample from './DonationForm';
 const ethers = require('ethers'); 
