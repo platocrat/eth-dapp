@@ -12,10 +12,9 @@ class CampaignRow extends Component{
 
     render() {
         return (
-
         <div class="col-md-3">
             <div class="card">
-            <a style={{ textDecoration: 'none', color: 'black'}} href="/about">
+            <a style={{ textDecoration: 'none', color: 'black'}} href="/about" name={this.props.name}>
                 <img class="card-img-top" alt="Bootstrap Thumbnail First" src="https://www.layoutit.com/img/people-q-c-600-200-1.jpg" />
                 <div class="card-block">
                     <h5 class="card-header text-center">
