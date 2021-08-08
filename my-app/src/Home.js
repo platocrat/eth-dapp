@@ -10,6 +10,7 @@ import SwapExamples from "./abis/SwapExamples.json"
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
+import { UncontrolledCarousel } from 'reactstrap';
 init("user_ZYwxMAlLHOgUNKO4wSLBm");
 const ethers = require('ethers'); 
 const color="#d2d2d2";
@@ -301,6 +302,30 @@ class Home extends Component{
         this.contractOrg = new ethers.Contract("0x910775E150224bEe9ADDd4A519aCAB85eE22aa64", this.orgAbi, this.provider);
         this.swapperAddress = "0x6cA17f42B071311d9564cA1683cbe0cf3a15a01B";
         this.loadTokenList();
+
+        this.items = [
+          {
+            src: 'https://www.layoutit.com/img/sports-q-c-1600-500-1.jpg',
+            altText: 'Slide 1',
+            caption: 'Slide 1',
+            header: 'Slide 1 Header',
+            key: '1'
+          },
+          {
+            src: 'https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg',
+            altText: 'Slide 2',
+            caption: 'Slide 2',
+            header: 'Slide 2 Header',
+            key: '2'
+          },
+          {
+            src: 'https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg',
+            altText: 'Slide 3',
+            caption: 'Slide 3',
+            header: 'Slide 3 Header',
+            key: '3'
+          }
+        ];
       }
 
       async loadTokenList() {
@@ -552,53 +577,7 @@ class Home extends Component{
         return(
         <div class="row">
           <div class="col-md-12">
-            <div class="carousel slide" id="carousel-856309">
-              <ol class="carousel-indicators">
-                <li data-slide-to="0" data-target="#carousel-856309" class="active">
-                </li>
-                <li data-slide-to="1" data-target="#carousel-856309">
-                </li>
-                <li data-slide-to="2" data-target="#carousel-856309">
-                </li>
-              </ol>
-              <div class="carousel-inner">
-                <div class="carousel-item active">
-                  <img class="d-block w-100" alt="Carousel Bootstrap First" src="https://www.layoutit.com/img/sports-q-c-1600-500-1.jpg" />
-                  <div class="carousel-caption">
-                    <h4>
-                      First Thumbnail label
-                    </h4>
-                    <p>
-                      Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-                    </p>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <img class="d-block w-100" alt="Carousel Bootstrap Second" src="https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg" />
-                  <div class="carousel-caption">
-                    <h4>
-                      Second Thumbnail label
-                    </h4>
-                    <p>
-                      Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-                    </p>
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <img class="d-block w-100" alt="Carousel Bootstrap Third" src="https://www.layoutit.com/img/sports-q-c-1600-500-3.jpg" />
-                  <div class="carousel-caption">
-                    <h4>
-                      Third Thumbnail label
-                    </h4>
-                    <p>
-                      Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-                    </p>
-                  </div>
-                </div>
-              </div> <a class="carousel-control-prev" href="#carousel-856309" data-slide="prev"><span class="carousel-control-prev-icon"></span> <span class="sr-only">Previous</span></a> <a class="carousel-control-next" href="#carousel-856309" data-slide="next"><span class="carousel-control-next-icon"></span> <span class="sr-only">Next</span></a>
-            </div>
-          </div>
-      
+            <UncontrolledCarousel items={this.items} />
       <h3 className="float-left"><b> CAMPAIGNS </b></h3>
       <div class="row ms-1">
         {campList()}
@@ -610,6 +589,7 @@ class Home extends Component{
 		        </div>}
       </div>
     </div>
+    </div>
 
         
         )
@@ -618,65 +598,52 @@ class Home extends Component{
 
 /*
 
-<div className="card mb-6" style={{backgroundColor: color}}>
-
-          <div className="card-body" style={{backgroundColor: color}}>
-
-            <form className="mb-3" onSubmit={(event) => {
-                event.preventDefault()
-                let amount
-                amount = this.state.value.toString()
-                this.donate(this.state.campId, amount, this.state.email)
-              }}>
-              <div>
-                <h4 className="float-left bg-info"><b>DONATE </b></h4>
-                <div> </div>
-                <span className="float-right text-muted"> Campaign ID: </span>
-              </div>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.value = input }}
-                  value={this.state.campId}
-                  onChange={this.handleCampId}
-                  className="form-control form-control-lg"
-                  placeholder="Enter campaign ID (number)"
-                  required />
-              </div>
-              <span className="float-right text-muted"> Amount: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.address = input.toString()}}
-                  value={this.state.value}
-                  onChange={this.handleValue}
-                  className="form-control form-control-lg"
-                  placeholder="Enter amount you are donating (in ETH)"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    &nbsp;&nbsp;&nbsp; ETH
-                  </div>
-                </div>
-              </div>
-              <span className="float-right text-muted"> Email: </span>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //ref={(input) => { this.input.value = input }}
-                  value={this.state.email}
-                  onChange={this.handleEmail}
-                  className="form-control form-control-lg"
-                  placeholder="Enter email"
-                  required />
-                <small class="w-100 text-muted">Your email is safe with us :)</small>
-              </div>
-              <button type="submit" className="btn btn-info btn-block btn-lg">DONATE!</button>
-            </form>
-            </div>
-            </div>
-            </div>
-
+<div class="carousel slide" id="carousel-856309">
+<ol class="carousel-indicators">
+  <li data-slide-to="0" data-target="#carousel-856309" class="active">
+  </li>
+  <li data-slide-to="1" data-target="#carousel-856309">
+  </li>
+  <li data-slide-to="2" data-target="#carousel-856309">
+  </li>
+</ol>
+<div class="carousel-inner">
+  <div class="carousel-item active">
+    <img class="d-block w-100" alt="Carousel Bootstrap First" src="https://www.layoutit.com/img/sports-q-c-1600-500-1.jpg" />
+    <div class="carousel-caption">
+      <h4>
+        First Thumbnail label
+      </h4>
+      <p>
+        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
+      </p>
+    </div>
+  </div>
+  <div class="carousel-item">
+    <img class="d-block w-100" alt="Carousel Bootstrap Second" src="https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg" />
+    <div class="carousel-caption">
+      <h4>
+        Second Thumbnail label
+      </h4>
+      <p>
+        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
+      </p>
+    </div>
+  </div>
+  <div class="carousel-item">
+    <img class="d-block w-100" alt="Carousel Bootstrap Third" src="https://www.layoutit.com/img/sports-q-c-1600-500-3.jpg" />
+    <div class="carousel-caption">
+      <h4>
+        Third Thumbnail label
+      </h4>
+      <p>
+        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
+      </p>
+    </div>
+  </div>
+</div> <a class="carousel-control-prev" href="#carousel-856309" data-slide="prev"><span class="carousel-control-prev-icon"></span> <span class="sr-only">Previous</span></a> <a class="carousel-control-next" href="#carousel-856309" data-slide="next"><span class="carousel-control-next-icon"></span> <span class="sr-only">Next</span></a>
+</div>
+</div>
 */
 
 export default Home;
