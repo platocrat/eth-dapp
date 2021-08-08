@@ -12,7 +12,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 init("user_ZYwxMAlLHOgUNKO4wSLBm");
 const ethers = require('ethers'); 
-const color="#F9F3F3";
+const color="#d2d2d2";
 
 
 
@@ -515,7 +515,7 @@ class Home extends Component{
             if (!this.state.loading){
             let content = [];
             var camps = this.state.activeCamps;
-            for (var [key,value] of Object.entries(camps)) {
+            for (var [key,value] of Object.entries(this.state.activeCamps)) {
               content.push(<CampaignRow
                 name={value.name}
                 id={value.id}
@@ -524,8 +524,25 @@ class Home extends Component{
                 description={value.description}
                 endStamp={value.endTimeStamp}
                 daysLeft={value.daysLeft}
+                color=""
+                disabled={false}
                 home={this}/>);
             }
+            if (this.state.inactiveCamps | this.state.finishedCamps){
+            for (var [key,value] of Object.entries(this.state.inactiveCamps + this.finishedCampaigns)) {
+              content.push(<CampaignRow
+                name={value.name}
+                id={value.id}
+                currFund={value.currFund}
+                goal={value.goal}
+                description={value.description}
+                endStamp={value.endTimeStamp}
+                daysLeft={value.daysLeft}
+                color="#d2d2d2"
+                disabled={true}
+                home={this}/>);
+            }
+          }
             return content;
           }
           else{
@@ -583,9 +600,9 @@ class Home extends Component{
           </div>
       
       <h3 className="float-left"><b> CAMPAIGNS </b></h3>
-      <div class="row">
+      <div class="row ms-1">
         {campList()}
-        {this.state.campLoadingFinished && <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {this.state.success && <div class="alert alert-success alert-dismissible fade show" role="alert">
 			    <strong>Thank You!</strong> Your donation was successful.
 			    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 			    <span aria-hidden="true">&times;</span>

@@ -23,7 +23,7 @@ export const client = new ApolloClient({
   });
 function App() {
   return (
-    <div style={{backgroundColor: color}}>
+    <div>
     <BrowserRouter>
     <NavBar />
     <Switch>
