@@ -264,11 +264,14 @@ class Home extends Component{
           activeCamps : {},
           finishedCamps: {},
           inactiveCamps: {},
-          token: ""
+          token: "",
+          success: false,
+          campLoadingFinished : false
         }
     
         
         //this.state = {value: ''};
+        this.handleLoadingChange = this.handleLoadingChange.bind(this);
         this.loadBlockchainData = this.loadBlockchainData.bind(this);
         this.handleCampId = this.handleCampId.bind(this);
         this.handleAddress = this.handleAddress.bind(this);
@@ -377,13 +380,16 @@ class Home extends Component{
               camp.on('GoalReached', (totalFund, goal, campaignId, name, mails) => this.sendMail(campaignId, totalFund, goal, name, mails))
               camp.on('Donated', (amount, campaignId, name, mail) => {
                   this.donatedMail(amount, campaignId, name, mail);
-                  this.setState({loading: true});})
+                  this.setState({loading: true, success: true});
+                  const timer = setTimeout(() => {
+                    console.log('This will run after 3 seconds!');
+                    this.setState({success: false});
+                  }, 3000);})
               this.subscribed.add(id._hex)
             }
           }
 
           this.setState({activeCamps : activeCamps, finishedCamps: finishedCamps, inactiveCamps: inactiveCamps, loading: false});
-
 
         }
         
@@ -486,7 +492,7 @@ class Home extends Component{
         return 0;
       }
       
-
+      handleLoadingChange(event){ this.setState({loading : true}); event.preventDefault();}
       handleCampId(event) {    this.setState({campId: event.target.value});  }  
       handleAddress(event) {    this.setState({address: event.target.value});  }
       handleValue(event) {    this.setState({value: event.target.value});  }
@@ -579,6 +585,12 @@ class Home extends Component{
       <h3 className="float-left"><b> CAMPAIGNS </b></h3>
       <div class="row">
         {campList()}
+        {this.state.campLoadingFinished && <div class="alert alert-success alert-dismissible fade show" role="alert">
+			    <strong>Thank You!</strong> Your donation was successful.
+			    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			    <span aria-hidden="true">&times;</span>
+			      </button>
+		        </div>}
       </div>
     </div>
 
