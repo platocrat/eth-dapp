@@ -21,10 +21,16 @@ class NavBar extends Component{
               <a class="nav-link" href="/about"> About </a>
               </li>
               <li class="nav-item">
+              <a class="nav-link" href="/member"> Member </a>
+              </li>                  
+              <li class="nav-item">
+              <a class="nav-link" href="/signup"> Sign up </a>
+              </li>
+              <li class="nav-item">
               <a class="nav-link" href="/login"> Login </a>
               </li>
               <li class="nav-item">
-              <a class="nav-link" href="/member"> Member </a>
+              <a class="nav-link" href="/logout"> Logout </a>
               </li>
             </ul>
           <img src={Logo} width="135" height="50" class="pull-right" alt=""></img>

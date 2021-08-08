@@ -7,10 +7,12 @@ import NavBar from "./NavBar"
 import Member from "./Member"
 import CampaignDetails from "./CampaignDetails"
 import 'bootstrap/dist/css/bootstrap.min.css'
-import {BrowserRouter, Route, Link} from "react-router-dom"
+import {BrowserRouter, Route, Link, Switch} from "react-router-dom"
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
+import Signup from './Signup';
+import Logout from './Logout';
 const color="#F9F3F3";
 
 export const client = new ApolloClient({
@@ -23,13 +25,18 @@ function App() {
   return (
     <div style={{backgroundColor: color}}>
     <BrowserRouter>
-      <NavBar />
+    <NavBar />
+    <Switch>
       <Route exact path="/" component={Home} />
       <Route exact path="/login" component={Login} />
+      <Route exact path="/signup" component={Signup} />
       <Route exact path="/about2" component={About} />
       <Route exact path="/about" component={CampaignDetails} />
-    <Route exact path="/member" component={Member} />
+      <Route exact path="/member" component={Member} />
+      <Route exact path="/logout" component={Logout} />
+    </Switch>
     </BrowserRouter>
+
 </div>
   );
 }
