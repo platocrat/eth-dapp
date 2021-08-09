@@ -380,7 +380,6 @@ class Home extends Component{
           const date2 = new Date(endStamp*1000);
           const currDate = Math.floor(new Date());
           var daysLeft = Math.ceil(new Date(date - currDate) / (24 * 60 * 60 * 1000));
-          endStamp = date2.toLocaleDateString("en-GB");
           var mails = [];
           var counterMail = await camp.mailCount();
           for(var j=0; j<counterMail; j++){
@@ -393,7 +392,7 @@ class Home extends Component{
           Campaign.goal = ethers.utils.formatEther(goal.toString());
           Campaign.description = description.toString();
           Campaign.mails = mails;
-          Campaign.endTimeStamp = endStamp;
+          Campaign.endTimeStamp = date2.toLocaleDateString("en-GB");
           Campaign.daysLeft = daysLeft;
           if (currStamp > endStamp){
             inactiveCamps[Campaign.id] = Campaign;

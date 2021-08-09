@@ -19,10 +19,7 @@ class NavBar extends Component{
               </li>
               <li class="nav-item active">
               <a class="nav-link" href="/about"> About </a>
-              </li>
-              <li class="nav-item">
-              <a class="nav-link" href="/member"> Member </a>
-              </li>                  
+              </li>            
               <li class="nav-item">
               <a class="nav-link" href="/signup"> Sign up </a>
               </li>
@@ -30,7 +27,7 @@ class NavBar extends Component{
               <a class="nav-link" href="/login"> Login </a>
               </li>
               <li class="nav-item">
-              <a class="nav-link" href="/logout"> Logout </a>
+              <a class="nav-link" href="/"> Logout </a>
               </li>
             </ul>
           <img src={Logo} width="135" height="50" class="pull-right" alt=""></img>

@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import emailjs from 'emailjs-com'
 import Campaign from "./abis/Campaign.json"
 import Organisation from "./abis/Organisation.json"
-import { Form, FormGroup, Label, Input, FormText, Spinner  } from 'reactstrap';
+import { Form, FormGroup, Label, Input, FormText, Spinner, ModalFooter, Button } from 'reactstrap';
 const ethers = require('ethers'); 
 
 
@@ -30,7 +30,8 @@ const Member = (props) => {
       gasLimit: 0x7a1200
     }
     var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
-    await tx.wait();
+    var receipt = await tx.wait();
+    console.log(receipt.getStatus());
     window.location.replace('http://localhost:3000');
   };
   const onSubmit = e => {
@@ -104,11 +105,11 @@ const Member = (props) => {
         <Input type="file" name="file" id="exampleFile" />
       </FormGroup>
     </Form>
-    <div className="text-center">
-    {spinner && <Spinner color="primary" children=""/>}
-    <button onClick={e => {setSpinner(true); addCampaign(name, goal, description, date, time).then(reset);
-    }} className="btn btn-dark btn-block btn-normal mt-3">ADD CAMPAIGN</button>
-    </div>
+    <ModalFooter>
+    {spinner && <Spinner color="primary" className="m-" children=""/>}
+    <Button onClick={e => {setSpinner(true); addCampaign(name, goal, description, date, time).then(reset);
+    }} className="btn btn-dark btn-block btn-normal mt-3">ADD CAMPAIGN</Button>
+    </ModalFooter>
   </div>
   </div>
   </div>
