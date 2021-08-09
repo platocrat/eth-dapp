@@ -11,9 +11,13 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 import { UncontrolledCarousel } from 'reactstrap';
+import { create, ipfsHttpClient } from 'ipfs-http-client';
+const FormData = require('form-data');
+const axios = require('axios');
 init("user_ZYwxMAlLHOgUNKO4wSLBm");
 const ethers = require('ethers'); 
 const color="#d2d2d2";
+const pinataSDK = require('@pinata/sdk');
 
 
 
@@ -287,7 +291,7 @@ class Home extends Component{
         this.handleEmail = this.handleEmail.bind(this);
         this.handleMemberAddress = this.handleMemberAddress.bind(this);
         this.handleToken = this.handleToken.bind(this);
-        this.provider = new ethers.providers.InfuraProvider("ropsten", "52a080cad405419aa4318047bde7087f"); 
+        this.provider = new ethers.providers.InfuraProvider("ropsten", "6d31cb4cff10447d83830dd5eaee29e2"); 
         //const url = "http://localhost:7545"
         //this.provider = new ethers.providers.JsonRpcProvider(url);
         this.finishedCampaigns = [];
@@ -299,10 +303,12 @@ class Home extends Component{
           "DAI": "0xad6d458402f60fd3bd25163575031acdce07538d",
           "WETH": "0xc778417e063141139fce010982780140aa0cd5ab",
           "USDT": "0x110a13fc3efe6a245b50102d2d79b3e76125ae83"};
-        this.contractOrg = new ethers.Contract("0x910775E150224bEe9ADDd4A519aCAB85eE22aa64", this.orgAbi, this.provider);
-        this.swapperAddress = "0x6cA17f42B071311d9564cA1683cbe0cf3a15a01B";
+        this.contractOrg = new ethers.Contract("0x583F1A72C30AC3c1134b29aBfc826F59e9e97Cb6", this.orgAbi, this.provider);
+        this.swapperAddress = "0xaeda743de9aeaEf60604cDd9077B664E10a0B844";
         this.loadTokenList();
-
+        this.pinataApiKey = "78422e3a7f7f490ac776";
+        this.pinataSecretApiKey = "5d65bc1b6d2d865088d1974323f65c32061eb91c7c5d1b4895c4659ba933dfcc";
+        this.imgURI = "https://ipfs.io/ipfs/QmRQX6MEwTcumgo2xhVagQ5mj7AxENB4AK6axPMM28aLz1?filename=Lisa.jpeg";
         this.items = [
           {
             src: 'https://www.layoutit.com/img/sports-q-c-1600-500-1.jpg',
@@ -327,7 +333,6 @@ class Home extends Component{
           }
         ];
       }
-
       async loadTokenList() {
         var timer = null;
         await this.tokenListURL.forEach(url => {
@@ -347,9 +352,46 @@ class Home extends Component{
         console.error(error)
         });
         });
-        console.log(this.tokensDict);
+        
       }
-    
+      uploadNftFile(amount, campName, stamp, currency){
+        const pinata = pinataSDK(this.pinataApiKey, this.pinataSecretApiKey);
+        pinata.testAuthentication().then((result) => {
+          //handle successful authentication here
+          console.log(result);
+        }).catch((err) => {
+          //handle error here
+          console.log(err);
+        });
+        const body = {
+          name: campName,
+          amount: amount,
+          currency: currency,
+          timestamp: stamp,
+          img_uri: this.imgURI
+        };
+       const options = {
+          pinataMetadata: {
+              name: "ELF token",
+              keyvalues: {
+                  customKey: 'customValue',
+                  customKey2: 'customValue2'
+              }
+          },
+          pinataOptions: {
+              cidVersion: 0
+          }
+      };
+      pinata.pinJSONToIPFS(body, options).then((result) => {
+          //handle results here
+          console.log(result);
+          return result;
+      }).catch((err) => {
+          //handle error here
+          console.log(err);
+          return 0;
+      });
+      }
       async loadBlockchainData() {
         var activeCamps = {};
         var inactiveCamps = {};
@@ -380,6 +422,7 @@ class Home extends Component{
           const date2 = new Date(endStamp*1000);
           const currDate = Math.floor(new Date());
           var daysLeft = Math.ceil(new Date(date - currDate) / (24 * 60 * 60 * 1000));
+          endStamp  = date2.toLocaleDateString("en-GB");
           var mails = [];
           var counterMail = await camp.mailCount();
           for(var j=0; j<counterMail; j++){
@@ -392,7 +435,7 @@ class Home extends Component{
           Campaign.goal = ethers.utils.formatEther(goal.toString());
           Campaign.description = description.toString();
           Campaign.mails = mails;
-          Campaign.endTimeStamp = date2.toLocaleDateString("en-GB");
+          Campaign.endTimeStamp = endStamp;
           Campaign.daysLeft = daysLeft;
           if (currStamp > endStamp){
             inactiveCamps[Campaign.id] = Campaign;
@@ -421,7 +464,7 @@ class Home extends Component{
         
       }
 
-      async swap(campaignId, amount, email, token){
+      async swap(campaignId, amount, email, token, uri){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
@@ -441,44 +484,86 @@ class Home extends Component{
         var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, this.provider);
         swapContract = swapContract.connect(signer);
         
-        var outAmount = await swapContract.swapExactInputSingle(amount, token, campAddress, parameters);
+        var outAmount = await swapContract.swapExactInputSingle(amount, token, campAddress, email, uri, parameters);
         console.log(outAmount);
       }
 
       async donate(campaignId, amount, email, currency){
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const pinata = pinataSDK(this.pinataApiKey, this.pinataSecretApiKey);
+        pinata.testAuthentication().then((result) => {
+          //handle successful authentication here
+          console.log(result);
+        }).catch((err) => {
+          //handle error here
+          console.log(err);
+        });
+        var camp = await this.state.activeCamps[campaignId];
+        var block = await this.provider.getBlock("latest");
+        var stamp = block.timestamp;
+        const body = {
+          name: camp.name,
+          amount: amount,
+          currency: currency,
+          timestamp: stamp,
+          img_uri: this.imgURI
+        };
+       const options = {
+          pinataMetadata: {
+              name: "ELF token",
+              keyvalues: {
+                  customKey: 'customValue',
+                  customKey2: 'customValue2'
+              }
+          },
+          pinataOptions: {
+              cidVersion: 0
+          }
+      };
+      pinata.pinJSONToIPFS(body, options).then( async (result) => {
+          //handle results here
+          console.log(result);
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         console.log(campaignId)
-        if (currency == "ETH") {
-        var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
-        var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
-        contract = contract.connect(signer);
-        if (this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) > this.state.activeCamps[campaignId].goal){
-          return { result: false,
-                    message: "Amount too large - hard cap limitation, try a lower amount",
-                    value: [this.state.activeCamps[campaignId].goal.toNumber()-this.state.activeCamps[campaignId].currFund.toNumber()]}
+        console.log(this.state.activeCamps)
+          console.log(result);
+        var uri = result.IpfsHash;
+          console.log(uri);
+          if (currency == "ETH") {
+          var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
+          var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
+          contract = contract.connect(signer);
+          if (this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) > this.state.activeCamps[campaignId].goal){
+            return { result: false,
+                      message: "Amount too large - hard cap limitation, try a lower amount",
+                      value: [this.state.activeCamps[campaignId].goal.toNumber()-this.state.activeCamps[campaignId].currFund.toNumber()]}
+          }
+  
+          var parameters = {
+            value: ethers.utils.parseEther(amount),
+            gasLimit: 0x7a120
+          }
+          var tx = await contract.donate(email, uri, parameters);
+        } else {
+          var token = this.tokensDict[currency];
+          console.log(token);
+          this.swap(campaignId, amount, email, token, uri);
         }
-
-        var parameters = {
-          value: ethers.utils.parseEther(amount),
-          gasLimit: 0x7a120
-        }
-        var tx = await contract.donate(email, parameters);
-      } else {
-        var token = this.tokensDict[currency];
-        console.log(token);
-        this.swap(campaignId, amount, email, token);
-      }
-      this.setState({
-        campId: "",
-        address: "",
-        value: "",
-        email: ""
+        this.setState({
+          campId: "",
+          address: "",
+          value: "",
+          email: ""
+        });
+        return { result: true,
+          message: "Donation successful",
+          value: 0};  
+      }).catch((err) => {
+          //handle error here
+          console.log(err);
+          return 0;
       });
-      return { result: true,
-        message: "Donation successful",
-        value: 0}
-    }
+      } 
     
       async sendMail(campaignId, curr_fund, goal, name, mails) {
         var sent=[];

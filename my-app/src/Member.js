@@ -64,6 +64,7 @@ const Member = (props) => {
         <Input
         type="text"
         value={name}
+        name="campName"
         onChange={e => setName(e.target.value)}
         className="form-control form-control"
         placeholder="Enter campaign name"
@@ -71,7 +72,7 @@ const Member = (props) => {
       </FormGroup>
       <FormGroup className="mt-2">
         <Label for="exampleText">Campaign description:</Label>
-        <Input type="textarea" name="text" id="exampleText" value={description} onChange={e => setDescription(e.target.value)}/>
+        <Input type="textarea" name="description" id="exampleText" value={description} onChange={e => setDescription(e.target.value)}/>
       </FormGroup>
       <FormGroup className="mt-2">
         <Label for="exampleNumber">Campaign goal</Label>
@@ -107,7 +108,7 @@ const Member = (props) => {
     </Form>
     <ModalFooter>
     {spinner && <Spinner color="primary" className="m-" children=""/>}
-    <Button onClick={e => {setSpinner(true); addCampaign(name, goal, description, date, time).then(reset);
+    <Button disabled={!name | !description | !goal | !date | !time} onClick={e => {setSpinner(true); addCampaign(name, goal, description, date, time).then(reset);
     }} className="btn btn-dark btn-block btn-normal mt-3">ADD CAMPAIGN</Button>
     </ModalFooter>
   </div>

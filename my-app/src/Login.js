@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from "./Login.css"
 import jQuery from 'jquery';
 import Web3 from 'web3';
+import Organisation from "./abis/Organisation.json"
+const ethers = require('ethers'); 
 
 
 
@@ -12,8 +14,18 @@ const LoginForm = () => {
   const [errors, setErrors] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLogin] = useState(false);
-  const onLoggedIn = (auth) => {console.log("success");
-   setLogin(true);
+  const onLoggedIn = async (auth) => {console.log("success");
+  setLogin(true);
+  const orgAbi = Organisation.abi;
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  var address = await signer.getAddress();
+  var parameters = {
+    gasLimit: 0x7a1200
+  }
+  const contractOrg = new ethers.Contract("0x910775E150224bEe9ADDd4A519aCAB85eE22aa64", orgAbi, provider);
+  const orgContract = contractOrg.connect(signer);
+  var tx = await orgContract.addMember(address,parameters);
    window.location.replace('http://localhost:3000/member');
    return 0};
   let REACT_APP_BACKEND_URL="http://localhost:8000/api";

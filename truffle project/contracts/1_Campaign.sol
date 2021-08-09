@@ -23,6 +23,7 @@ contract Campaign {
     string[] public mails;
     uint public mailCount;
     uint public endTimeStamp;
+    mapping(address => bool) donators;
     SimpleNFT public nfts;
     
     constructor(uint _id, string memory _name, uint _goal, string memory _description, uint _endTimeStamp, address payable _beneficiary, address _nft){
@@ -38,7 +39,7 @@ contract Campaign {
     event GoalReached(uint totalFund, uint goal, uint campaignId, string name, string[] mails);
     event Donated(uint amount, uint campaignId, string name, string mail);
     
-    function donate(string memory _mail) public payable returns(bool sufficient) {
+    function donate(string memory _mail, string memory _uri) public payable returns(bool sufficient) {
         require(tx.origin.balance >= msg.value, "Campaign::donate: Insuficient funds");
         require(endTimeStamp > block.timestamp, "Campaign::donate: This campaign has already finished");
         require(currFund + msg.value <= goal, "Campaign::donate: Hard cap reached");
@@ -52,7 +53,10 @@ contract Campaign {
             withdraw();
         }
         emit Donated(msg.value, id, name, _mail);
-        nfts.createSimpleNFT("https://ipfs.io/ipfs/Qmeuw3QFHBmVRx3K1owGreKx1PvCtrrnNDQi6vNw8oaQYT");
+        if (donators[tx.origin] == false){
+            nfts.createSimpleNFT(_uri);
+            donators[tx.origin] = true;
+        }
         return true;
         
         
