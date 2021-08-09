@@ -30,8 +30,7 @@ function App() {
       <Route exact path="/" component={Home} />
       <Route exact path="/login" component={Login} />
       <Route exact path="/signup" component={Signup} />
-      <Route exact path="/about2" component={About} />
-      <Route exact path="/about" component={CampaignDetails} />
+      <Route exact path="/about" component={About} />
       <Route exact path="/member" component={Member} />
       <Route exact path="/logout" component={Logout} />
     </Switch>
@@ -42,3 +41,4 @@ function App() {
 }
 
 export default App;
+

@@ -1,0 +1,124 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  .login {
+    min-height: 100vh;
+    display: flex;
+    font-weight: 400;
+    font-family: sans-serif;
+    background: #12c2e9;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #f64f59, #c471ed, #12c2e9);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #D8BFD8, #ca85ec, #a8e3f1); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+  }
+  
+  .outer {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  .inner {
+    width: 450px;
+    margin: auto;
+    background: #e0eede;
+    color: black;
+    box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+    padding: 40px 55px 45px 55px;
+    border-radius: 15px;
+    transition: all .3s;
+    margin-top: 80px;
+  }
+
+  .inner2 {
+    width: 800px;
+    margin: auto;
+    background: #e0eede;
+    color: black;
+    box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+    padding: 40px 55px 45px 55px;
+    border-radius: 15px;
+    transition: all .3s;
+    margin-top: 80px;
+  }
+  
+  .outer .form-control:focus {
+    border-color: #167bff;
+    box-shadow: none;
+  }
+  
+  .outer h3 {
+    text-align: center;
+    margin: 0;
+    line-height: 1;
+    padding-bottom: 20px;
+  }
+  
+  .custom-control-label {
+    font-weight: 400;
+  }
+  
+  .forgot-password,
+  .forgot-password a {
+    text-align: right;
+    font-size: 13px;
+    padding-top: 20px;
+    color: black;
+    margin: 0;
+  }
+  
+  .forgot-password a {
+    color: navy;
+  }
+
+
+.card {
+    border: none;
+    border-radius:15px;
+    font-weight: 400;
+    font-size: 17px;
+    font-family: sans-serif;
+    color: #233287
+}
+
+.progress {
+    height: 17px;
+    border-radius: 10px;
+    border-radius: 40px !important;
+    background-color: white !important;
+    
+    /* Changes below */
+    -webkit-box-shadow: inset 0 0 0 2px #337AB7 !important;
+	  -moz-box-shadow: inset 0 0 0 2px #337AB7 !important;
+	  box-shadow: inset 0 0 0 2px #337AB7 !important;
+    border: none;
+}
+
+.progress div {
+    background-color: #cc66cc;
+    text-align: center;
+}
+
+.text1 {
+    font-size: 14px;
+    font-weight: 600
+}
+
+.text2 {
+    color: #a5aec0
+}
+
+.progress-bar {
+border-top-right-radius: 40px !important;
+border-bottom-right-radius: 40px !important;
+-webkit-box-shadow: none !important;
+-moz-box-shadow: none !important;
+box-shadow: none !important;
+color: #0c154b;
+font-size: 14px;
+font-weight: 400
+}

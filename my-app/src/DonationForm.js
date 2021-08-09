@@ -52,7 +52,7 @@ const ModalExample = (props) => {
 
   return (
     <div>
-      <Button color="primary" onClick={toggle} disabled={props.campaignProps.disabled}>Donate</Button>
+      <Button color="dark" onClick={toggle} disabled={props.campaignProps.disabled}>Donate</Button>
       <Modal isOpen={modal & !loading} toggle={toggle} className={className}>
         <ModalHeader toggle={toggle}>{props.name}</ModalHeader>
         <ModalBody>

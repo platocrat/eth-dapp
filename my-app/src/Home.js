@@ -549,12 +549,15 @@ class Home extends Component{
                 description={value.description}
                 endStamp={value.endTimeStamp}
                 daysLeft={value.daysLeft}
-                color=""
+                color="#e0eede"
+                colorTitle="#8fbc8f"
                 disabled={false}
                 home={this}/>);
             }
-            if (this.state.inactiveCamps | this.state.finishedCamps){
-            for (var [key,value] of Object.entries(this.state.inactiveCamps + this.finishedCampaigns)) {
+            console.log(this.state.inactiveCamps);
+            console.log(this.state.finishedCamps);
+            if (this.state.inactiveCamps){
+            for (var [key,value] of Object.entries(this.state.inactiveCamps )) {
               content.push(<CampaignRow
                 name={value.name}
                 id={value.id}
@@ -563,11 +566,27 @@ class Home extends Component{
                 description={value.description}
                 endStamp={value.endTimeStamp}
                 daysLeft={value.daysLeft}
-                color="#d2d2d2"
+                color="#c7c7c7"
+                colorTitle="54575c"
                 disabled={true}
                 home={this}/>);
             }
-          }
+          } if(this.state.finishedCamps){
+            for (var [key,value] of Object.entries(this.state.finishedCamps)) {
+                content.push(<CampaignRow
+                  name={value.name}
+                  id={value.id}
+                  currFund={value.currFund}
+                  goal={value.goal}
+                  description={value.description}
+                  endStamp={value.endTimeStamp}
+                  daysLeft={value.daysLeft}
+                  color="#c7c7c7"
+                  colorTitle="54575c"
+                  disabled={true}
+                  home={this}/>);
+              }
+          } 
             return content;
           }
           else{
@@ -578,8 +597,15 @@ class Home extends Component{
         <div class="row">
           <div class="col-md-12">
             <UncontrolledCarousel items={this.items} />
-      <h3 className="float-left"><b> CAMPAIGNS </b></h3>
       <div class="row ms-1">
+      <section>
+        <div class="container mt-2">
+        <hr style={{color:"#ca85ec", height: 10}}></hr>
+        <h1 class="text-center" style={{fontWeight: 300, fontFamily: "sans-serif", color: "#233287"}}><b>Support children</b></h1>
+        <hr style={{color:"#ca85ec", height: 10}}></hr>
+        <p class="text-center" style={{color: "#4c0e96"}}>Fund raising campaigns for supporting children all around the world.</p>
+        </div>
+        </section>
         {campList()}
         {this.state.success && <div class="alert alert-success alert-dismissible fade show" role="alert">
 			    <strong>Thank You!</strong> Your donation was successful.
@@ -595,56 +621,5 @@ class Home extends Component{
         )
     }
 }
-
-/*
-
-<div class="carousel slide" id="carousel-856309">
-<ol class="carousel-indicators">
-  <li data-slide-to="0" data-target="#carousel-856309" class="active">
-  </li>
-  <li data-slide-to="1" data-target="#carousel-856309">
-  </li>
-  <li data-slide-to="2" data-target="#carousel-856309">
-  </li>
-</ol>
-<div class="carousel-inner">
-  <div class="carousel-item active">
-    <img class="d-block w-100" alt="Carousel Bootstrap First" src="https://www.layoutit.com/img/sports-q-c-1600-500-1.jpg" />
-    <div class="carousel-caption">
-      <h4>
-        First Thumbnail label
-      </h4>
-      <p>
-        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-      </p>
-    </div>
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" alt="Carousel Bootstrap Second" src="https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg" />
-    <div class="carousel-caption">
-      <h4>
-        Second Thumbnail label
-      </h4>
-      <p>
-        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-      </p>
-    </div>
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" alt="Carousel Bootstrap Third" src="https://www.layoutit.com/img/sports-q-c-1600-500-3.jpg" />
-    <div class="carousel-caption">
-      <h4>
-        Third Thumbnail label
-      </h4>
-      <p>
-        Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-      </p>
-    </div>
-  </div>
-</div> <a class="carousel-control-prev" href="#carousel-856309" data-slide="prev"><span class="carousel-control-prev-icon"></span> <span class="sr-only">Previous</span></a> <a class="carousel-control-next" href="#carousel-856309" data-slide="next"><span class="carousel-control-next-icon"></span> <span class="sr-only">Next</span></a>
-</div>
-</div>
-*/
-
 export default Home;
 
