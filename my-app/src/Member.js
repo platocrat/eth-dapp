@@ -4,6 +4,8 @@ import emailjs from 'emailjs-com'
 import Campaign from "./abis/Campaign.json"
 import Organisation from "./abis/Organisation.json"
 import { Form, FormGroup, Label, Input, FormText, Spinner, ModalFooter, Button } from 'reactstrap';
+import axios from 'axios'
+
 const ethers = require('ethers'); 
 
 
@@ -14,6 +16,7 @@ const Member = (props) => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [spinner, setSpinner] = useState(false);
+  const [file, setFile] = useState('');
   const addCampaign = async (name, goal, description, date, time) => {
     console.log(date, time)
     var datetime = date + "T" + time;
@@ -29,11 +32,29 @@ const Member = (props) => {
     var parameters = {
       gasLimit: 0x7a1200
     }
+
+    const data = new FormData()
+    const ext = file.name.split('.').pop()
+
     var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
+    var counter = await orgContract.campaignCounter();
+    console.log(counter)
+    const new_file = new File([file], parseInt(counter._hex) + '.' + ext, {type: file.type});
+    data.append('file', new_file)
+
+    axios.post("http://localhost:8000/upload", data, {}).then(res => {
+      console.log(res.statusText)
+    })
+    console.log(file)
     var receipt = await tx.wait();
     console.log(receipt.getStatus());
     window.location.replace('http://localhost:3000');
   };
+
+  const fileChangeHandler = e => {
+    setFile(e.target.files[0])
+  }
+
   const onSubmit = e => {
     e.preventDefault();
 
@@ -102,12 +123,12 @@ const Member = (props) => {
       </FormGroup>
       <FormGroup className="mt-2">
         <Label for="exampleFile">File</Label>
-        <Input type="file" name="file" id="exampleFile" />
+        <Input type="file" name="file" id="exampleFile" onChange={fileChangeHandler}/>
       </FormGroup>
     </Form>
     <ModalFooter>
     {spinner && <Spinner color="primary" className="m-" children=""/>}
-    <Button onClick={e => {setSpinner(true); addCampaign(name, goal, description, date, time).then(reset);
+    <Button disabled={!name | !description | !goal | !date | !time} onClick={e => {setSpinner(true); addCampaign(name, goal, description, date, time).then(reset);
     }} className="btn btn-dark btn-block btn-normal mt-3">ADD CAMPAIGN</Button>
     </ModalFooter>
   </div>
