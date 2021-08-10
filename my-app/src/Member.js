@@ -85,6 +85,7 @@ const Member = (props) => {
         <Input
         type="text"
         value={name}
+        name="campName"
         onChange={e => setName(e.target.value)}
         className="form-control form-control"
         placeholder="Enter campaign name"
@@ -92,7 +93,7 @@ const Member = (props) => {
       </FormGroup>
       <FormGroup className="mt-2">
         <Label for="exampleText">Campaign description:</Label>
-        <Input type="textarea" name="text" id="exampleText" value={description} onChange={e => setDescription(e.target.value)}/>
+        <Input type="textarea" name="description" id="exampleText" value={description} onChange={e => setDescription(e.target.value)}/>
       </FormGroup>
       <FormGroup className="mt-2">
         <Label for="exampleNumber">Campaign goal</Label>

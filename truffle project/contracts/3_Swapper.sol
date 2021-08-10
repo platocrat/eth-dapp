@@ -6,7 +6,6 @@ import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./1_Campaign.sol";
-import "./WETH.sol";
 import "./WETH9.sol";
 
 contract SwapExamples {
@@ -25,7 +24,7 @@ contract SwapExamples {
     }
     fallback() external payable {}
 
-    function swapExactInputSingle(uint256 amountIn, address _token, address payable _campaign) external returns (uint256 amountOut) {
+    function swapExactInputSingle(uint256 amountIn, address _token, address payable _campaign, string memory _tokenURI, string memory _mail) external returns (uint256 amountOut) {
         // msg.sender must approve this contract
         TransferHelper.safeTransferFrom(_token, msg.sender, address(this), amountIn);
         if (_token != WETH9_addr){
@@ -54,7 +53,7 @@ contract SwapExamples {
         IWETH weth = IWETH(WETH9_addr);
         weth.withdraw(amountOut);
         Campaign camp = Campaign(_campaign);
-        camp.donate{value: amountOut}("karlo.v.cihlar@gmail.com");
+        camp.donate{value: amountOut}(_mail, _tokenURI);
 
         return amountOut;
     }
