@@ -9,13 +9,15 @@ class CampaignRow extends Component{
     constructor(props) {
         super()
         this.props = props
+        this.img_url = "http://localhost:8000/" + this.props.id + ".png"
     }
+
 
     render() {
         return (
         <div class="col-md-3 d-flex align-items-stretch mt-2">
             <div class="card border-dark md-2 h-100" style={{backgroundColor: this.props.color}}>
-                <img class="card-img-top" alt="Bootstrap Thumbnail First" src="https://www.layoutit.com/img/people-q-c-600-200-1.jpg" />
+                <img class="card-img-top" alt="Bootstrap Thumbnail First" src={this.img_url} />
                 <div class="card-block">
                     <h5 class="card-header text-center" style={{backgroundColor: this.props.colorTitle}}>
                         {this.props.name}
