@@ -311,24 +311,24 @@ class Home extends Component{
         this.imgURI = "https://ipfs.io/ipfs/QmRQX6MEwTcumgo2xhVagQ5mj7AxENB4AK6axPMM28aLz1?filename=Lisa.jpeg";
         this.items = [
           {
-            src: 'https://www.layoutit.com/img/sports-q-c-1600-500-1.jpg',
+            src: "http://localhost:8000/1.png",
             altText: 'Slide 1',
-            caption: 'Slide 1',
-            header: 'Slide 1 Header',
+            caption: 'Psychosocial support for children during COVID-19',
+            header: '',
             key: '1'
           },
           {
-            src: 'https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg',
+            src: "http://localhost:8000/2.png",
             altText: 'Slide 2',
-            caption: 'Slide 2',
-            header: 'Slide 2 Header',
+            caption: 'Helping children return to normalcy: psychosocial support for children in the Marawi crisis',
+            header: '',
             key: '2'
           },
           {
-            src: 'https://www.layoutit.com/img/sports-q-c-1600-500-2.jpg',
+            src: "http://localhost:8000/3.png",
             altText: 'Slide 3',
-            caption: 'Slide 3',
-            header: 'Slide 3 Header',
+            caption: 'Donate to Help Children in Sierra Leone',
+            header: '',
             key: '3'
           }
         ];
@@ -456,11 +456,11 @@ class Home extends Component{
             }
           }
 
-          this.setState({activeCamps : activeCamps, finishedCamps: finishedCamps, inactiveCamps: inactiveCamps, loading: false});
 
         }
         
-
+        this.setState({activeCamps : activeCamps, finishedCamps: finishedCamps, inactiveCamps: inactiveCamps, loading: false});
+        
         
       }
 
@@ -680,7 +680,7 @@ class Home extends Component{
         return(
         <div class="row">
           <div class="col-md-12">
-            <UncontrolledCarousel items={this.items} />
+            <UncontrolledCarousel items={this.items} style={{'height':"300px"}}/>
       <div class="row ms-1">
       <section>
         <div class="container mt-2">

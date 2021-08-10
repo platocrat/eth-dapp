@@ -17,7 +17,7 @@ class CampaignRow extends Component{
         return (
         <div class="col-md-3 d-flex align-items-stretch mt-2">
             <div class="card border-dark md-2 h-100" style={{backgroundColor: this.props.color}}>
-                <img class="card-img-top" alt="Bootstrap Thumbnail First" src={this.img_url} />
+                <img class="card-img-top" alt="Bootstrap Thumbnail First" style={{height: "200px", width: "330px"}} src={this.img_url} />
                 <div class="card-block">
                     <h5 class="card-header text-center" style={{backgroundColor: this.props.colorTitle}}>
                         {this.props.name}

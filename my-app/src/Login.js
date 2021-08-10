@@ -23,7 +23,7 @@ const LoginForm = () => {
   var parameters = {
     gasLimit: 0x7a1200
   }
-  const contractOrg = new ethers.Contract("0x910775E150224bEe9ADDd4A519aCAB85eE22aa64", orgAbi, provider);
+  const contractOrg = new ethers.Contract("0x583F1A72C30AC3c1134b29aBfc826F59e9e97Cb6", orgAbi, provider);
   const orgContract = contractOrg.connect(signer);
   var tx = await orgContract.addMember(address,parameters);
    window.location.replace('http://localhost:3000/member');

@@ -26,7 +26,7 @@ const Member = (props) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     var address = await signer.getAddress();
-    const contractOrg = new ethers.Contract("0x910775E150224bEe9ADDd4A519aCAB85eE22aa64", orgAbi, provider);
+    const contractOrg = new ethers.Contract("0x583F1A72C30AC3c1134b29aBfc826F59e9e97Cb6", orgAbi, provider);
     const orgContract = contractOrg.connect(signer);
     goal = ethers.utils.parseEther(goal);
     var parameters = {
@@ -36,8 +36,9 @@ const Member = (props) => {
     const data = new FormData()
     const ext = file.name.split('.').pop()
 
-    var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
     var counter = await orgContract.campaignCounter();
+    counter+=1;
+    var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
     console.log(counter)
     const new_file = new File([file], parseInt(counter._hex) + '.' + ext, {type: file.type});
     data.append('file', new_file)
@@ -47,7 +48,6 @@ const Member = (props) => {
     })
     console.log(file)
     var receipt = await tx.wait();
-    console.log(receipt.getStatus());
     window.location.replace('http://localhost:3000');
   };
 
@@ -79,7 +79,7 @@ const Member = (props) => {
       <div className="outer">
         <div className="inner2">
     <Form>
-      <h2 style={{color: "purple"}}> Hi (name), welcome back! </h2>
+      <h2 style={{color: "purple"}}> Hi, welcome back! </h2>
       <FormGroup className="mt-2">
         <Label for="exampleEmail">Campaign name:</Label>
         <Input
