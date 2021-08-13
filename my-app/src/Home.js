@@ -484,7 +484,7 @@ class Home extends Component{
         var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, this.provider);
         swapContract = swapContract.connect(signer);
         
-        var outAmount = await swapContract.swapExactInputSingle(amount, token, campAddress, email, uri, parameters);
+        var outAmount = await swapContract.swapExactInputSingle(amount, token, campAddress, uri, email, parameters);
         console.log(outAmount);
       }
 
