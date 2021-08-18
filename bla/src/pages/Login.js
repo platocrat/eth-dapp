@@ -53,10 +53,7 @@ export default function Login() {
     <RootStyle title="Login | Minimal-UI">
       <MHidden width="mdDown">
         <SectionStyle>
-          <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-            Hi, Welcome Back
-          </Typography>
-          <img src="/static/illustrations/illustration_login.png" alt="login" />
+          <img src="/favicon/metamask.svg" alt="metamask login" />
         </SectionStyle>
       </MHidden>
 
@@ -66,15 +63,20 @@ export default function Login() {
             <Typography variant="h4" gutterBottom align="center">
               Sign in to Support Children
             </Typography>
-            <Container maxWidth="96px" justifyContent="center">
-              <img src="/favicon/metamask.png" alt="metamask login" />
-            </Container>
+            <br />
+            <br />
+            <Container maxWidth="96px" justifyContent="center"></Container>
             <LoadingButton
+              style={{
+                backgroundColor: '#ffa500'
+              }}
               fullWidth
               size="large"
               type="submit"
               variant="contained"
               loading={isSubmitting}
+              component={RouterLink}
+              to="/register"
             >
               Login with MetaMask
             </LoadingButton>

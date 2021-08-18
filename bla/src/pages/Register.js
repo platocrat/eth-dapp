@@ -42,13 +42,6 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Register() {
   return (
     <RootStyle title="Register | Minimal-UI">
-      <AuthLayout>
-        Already have an account? &nbsp;
-        <Link underline="none" variant="subtitle2" component={RouterLink} to="/login">
-          Login
-        </Link>
-      </AuthLayout>
-
       <MHidden width="mdDown">
         <SectionStyle>
           <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
@@ -60,21 +53,10 @@ export default function Register() {
 
       <Container>
         <ContentStyle>
-          <Box sx={{ mb: 5 }}>
-            <Typography variant="h4" gutterBottom>
-              Get started absolutely free.
-            </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              Free forever. No credit card needed.
-            </Typography>
-          </Box>
-
-          <AuthSocial />
-
           <RegisterForm />
 
           <Typography variant="body2" align="center" sx={{ color: 'text.secondary', mt: 3 }}>
-            By registering, I agree to Minimal&nbsp;
+            By registering, I agree to Support children&nbsp;
             <Link underline="always" sx={{ color: 'text.primary' }}>
               Terms of Service
             </Link>

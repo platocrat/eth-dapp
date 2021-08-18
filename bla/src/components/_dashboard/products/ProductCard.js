@@ -12,6 +12,7 @@ import { fCurrency } from '../../../utils/formatNumber';
 //
 import Label from '../../Label';
 import ColorPreview from '../../ColorPreview';
+import FormDialog from '../../donate/DonationForm';
 
 // ----------------------------------------------------------------------
 
@@ -85,9 +86,7 @@ export default function ShopProductCard({ product }) {
         <Typography variant="h6" align="center" noWrap>
           goal: -
         </Typography>
-        <LoadingButton fullWidth size="large" type="submit" variant="contained">
-          Donate
-        </LoadingButton>
+        <FormDialog />
         <Typography variant="subtitle2" align="center" noWrap>
           End date: dd-mm-yyyy
         </Typography>
