@@ -39,11 +39,11 @@ export default class ProductList extends Component {
         newCamps.push(camp);
       }
       var currencies = [];
+      currencies.push({ value: 'ETH', label: 'ETH' });
       if (OldHome.tokensDict) {
         for (var [label, value] of Object.entries(OldHome.tokensDict)) {
           currencies.push({ value: value, label: label });
         }
-        currencies.push({ value: 'ETH', label: 'ETH' });
       }
       this.setState({
         loading: false,

@@ -10,7 +10,7 @@ import Home from '../../OldHome';
 
 export default function FormDialog({ id, currencies }) {
   const [open, setOpen] = React.useState(false);
-  const [currency, setCurrency] = React.useState('');
+  const [currency, setCurrency] = React.useState('ETH');
   const [amount, setAmount] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [isSubmitting, setSubmit] = React.useState(false);
@@ -21,9 +21,13 @@ export default function FormDialog({ id, currencies }) {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleDonate = () => {
+  const handleDonate = async () => {
     setSubmit(true);
-    OldHome.donate(id, amount, email, currency).then(setOpen(false));
+    console.log(currency);
+    await OldHome.donate(id, amount, email, currency).then(() => {
+      setOpen(false);
+      setSubmit(false);
+    });
     console.log(amount);
   };
   const handleChange = (event) => {

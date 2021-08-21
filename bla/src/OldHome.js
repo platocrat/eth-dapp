@@ -281,7 +281,7 @@ class Home extends Component {
     this.handleToken = this.handleToken.bind(this);
     this.provider = new ethers.providers.InfuraProvider(
       'ropsten',
-      '6d31cb4cff10447d83830dd5eaee29e2'
+      '0ea19bbf4c4d49518a0966666ff234f3'
     );
     //const url = "http://localhost:7545"
     //this.provider = new ethers.providers.JsonRpcProvider(url);
@@ -545,24 +545,24 @@ class Home extends Component {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         var uri = result.IpfsHash;
-        console.log(uri);
+        console.log(currency);
         if (currency == 'ETH') {
           var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
           var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
           contract = contract.connect(signer);
-          if (
-            this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) >
-            this.state.activeCamps[campaignId].goal
-          ) {
-            return {
-              result: false,
-              message: 'Amount too large - hard cap limitation, try a lower amount',
-              value: [
-                this.state.activeCamps[campaignId].goal.toNumber() -
-                  this.state.activeCamps[campaignId].currFund.toNumber()
-              ]
-            };
-          }
+          //   if (
+          //     this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) >
+          //     this.state.activeCamps[campaignId].goal
+          //   ) {
+          //     // return {
+          //     //   result: false,
+          //     //   message: 'Amount too large - hard cap limitation, try a lower amount',
+          //     //   value: [
+          //     //     this.state.activeCamps[campaignId].goal.toNumber() -
+          //     //       this.state.activeCamps[campaignId].currFund.toNumber()
+          //     //   ]
+          //     // };
+          //   }
 
           var parameters = {
             value: ethers.utils.parseEther(amount),
