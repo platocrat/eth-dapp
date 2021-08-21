@@ -2,7 +2,6 @@ import faker from 'faker';
 import { sample } from 'lodash';
 // utils
 import { mockImgProduct } from '../utils/mockImages';
-
 // ----------------------------------------------------------------------
 
 const PRODUCT_NAME = [
@@ -46,7 +45,6 @@ const PRODUCT_COLOR = [
 
 const products = [...Array(24)].map((_, index) => {
   const setIndex = index + 1;
-
   return {
     id: faker.datatype.uuid(),
     cover: mockImgProduct(setIndex),

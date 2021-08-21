@@ -1,22 +1,83 @@
 import PropTypes from 'prop-types';
+import React, { Component, useState } from 'react';
 // material
 import { Grid } from '@material-ui/core';
 import ShopProductCard from './ProductCard';
+import Home from '../../../OldHome';
 
 // ----------------------------------------------------------------------
 
-ProductList.propTypes = {
-  products: PropTypes.array.isRequired
-};
+// ProductList.propTypes = {
+//   products: PropTypes.array.isRequired
+// };
 
-export default function ProductList({ products, ...other }) {
-  return (
-    <Grid container spacing={3} {...other}>
-      {products.map((product) => (
-        <Grid key={product.id} item xs={12} sm={6} md={3}>
-          <ShopProductCard product={product} />
+export default class ProductList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      currCampList: [],
+      prevCampList: [],
+      currs: []
+    };
+  }
+  render() {
+    const OldHome = new Home();
+    var camps = OldHome.loadBlockchainData().then((rez) => {
+      var newCamps = [];
+      for (var [key, value] of Object.entries(rez.activeCamps)) {
+        var camp = {
+          name: value.name,
+          id: value.id,
+          currFund: value.currFund,
+          goal: value.goal,
+          description: value.description,
+          endStamp: value.endTimeStamp,
+          daysLeft: value.daysLeft,
+          color: '#e0eede'
+        };
+        newCamps.push(camp);
+      }
+      console.log('karlo peder');
+      var currencies = [];
+      if (OldHome.tokensDict) {
+        for (var [label, value] of Object.entries(OldHome.tokensDict)) {
+          currencies.push({ value: value, label: label });
+        }
+        console.log(currencies);
+      }
+      this.setState({
+        loading: false,
+        prevCampList: newCamps,
+        currCampList: newCamps,
+        currs: currencies
+      });
+      console.log(newCamps);
+      setTimeout(() => this.setState({ loading: true }), 20000);
+    });
+
+    if (!this.state.loading) {
+      return (
+        <Grid container spacing={3}>
+          {this.state.currCampList.map((camp) => (
+            <Grid key={camp.id} item xs={12} sm={6} md={3}>
+              <ShopProductCard camp={camp} currencies={this.state.currs} />
+            </Grid>
+          ))}
         </Grid>
-      ))}
-    </Grid>
-  );
+      );
+    } else {
+      console.log(this.state.currs);
+
+      return (
+        <Grid container spacing={3}>
+          {this.state.prevCampList.map((camp) => (
+            <Grid key={camp.id} item xs={12} sm={6} md={3}>
+              <ShopProductCard camp={camp} currencies={this.state.currs} />
+            </Grid>
+          ))}
+        </Grid>
+      );
+    }
+  }
 }

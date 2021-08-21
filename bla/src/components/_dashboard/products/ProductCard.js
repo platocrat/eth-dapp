@@ -13,6 +13,7 @@ import { fCurrency } from '../../../utils/formatNumber';
 import Label from '../../Label';
 import ColorPreview from '../../ColorPreview';
 import FormDialog from '../../donate/DonationForm';
+import { clamp } from 'lodash-es';
 
 // ----------------------------------------------------------------------
 
@@ -55,23 +56,23 @@ LinearProgressWithLabel.propTypes = {
   value: PropTypes.number.isRequired
 };
 
-export default function ShopProductCard({ product }) {
-  const { name, cover, price, colors, status, priceSale } = product;
+export default function ShopProductCard({ camp, currencies }) {
+  const { name, id, currFund, goal, description, endStamp, daysLeft, color } = camp;
   const classes = useStyles();
-  const [progress, setProgress] = React.useState(10);
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+  const [progress, setProgress] = React.useState(parseFloat(100 * (currFund / goal)).toFixed(2));
+  // React.useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
+  //   }, 800);
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, []);
 
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        <ProductImgStyle alt={name} src={cover} />
+        <ProductImgStyle alt={name} />
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
@@ -84,11 +85,11 @@ export default function ShopProductCard({ product }) {
           <LinearProgressWithLabel value={progress} />
         </div>
         <Typography variant="h6" align="center" noWrap>
-          goal: -
+          goal: {goal}
         </Typography>
-        <FormDialog />
+        <FormDialog id={id} currencies={currencies} />
         <Typography variant="subtitle2" align="center" noWrap>
-          End date: dd-mm-yyyy
+          End date: {endStamp}
         </Typography>
       </Stack>
     </Card>

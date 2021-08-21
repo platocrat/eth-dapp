@@ -14,12 +14,13 @@ import Datepicker from '@material-ui/lab/DatePicker';
 import TimePicker from '@material-ui/lab/TimePicker';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
-
+import Home from '../../../OldHome';
 // ----------------------------------------------------------------------
 
 export default function CreateForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const OldHome = new Home();
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string()
       .min(2, 'Too Short!')
@@ -35,9 +36,11 @@ export default function CreateForm() {
       campName: '',
       campDesc: ''
     },
-    validationSchema: RegisterSchema,
-    onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+    // validationSchema: RegisterSchema,
+    onSubmit: (values) => {
+      console.log(goal);
+      OldHome.addCampaign(values.campName, goal, values.campDesc, selectedDate, selectedTime);
+      //navigate('/dashboard', { replace: true });
     }
   });
 
@@ -45,7 +48,7 @@ export default function CreateForm() {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [selectedTime, setSelectedTime] = React.useState(new Date());
   const [file, setFile] = useState('');
-  const [goal, setGoal] = useState('0.0');
+  const [goal, setGoal] = useState('');
   const [currency, setCurrency] = React.useState('');
   const fileChangeHandler = (e) => {
     setFile(e.target.files[0]);
@@ -69,7 +72,6 @@ export default function CreateForm() {
       label: '¥'
     }
   ];
-
   const handleChange = (event) => {
     setCurrency(event.target.value);
   };
@@ -100,11 +102,7 @@ export default function CreateForm() {
               type="number"
               value={goal}
               variant="outlined"
-              inputProps={{
-                maxLength: 13,
-                step: '0.1'
-              }}
-              onChange={(e) => setGoal(parseFloat(e.target.value))}
+              onChange={(e) => setGoal(e.target.value)}
             />
             <TextField
               id="standard-select-currency-native"
