@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component, useState } from 'react';
 // material
-import { Grid } from '@material-ui/core';
+import { Grid, CircularProgress, Button } from '@material-ui/core';
 import ShopProductCard from './ProductCard';
 import Home from '../../../OldHome';
 
@@ -38,22 +38,18 @@ export default class ProductList extends Component {
         };
         newCamps.push(camp);
       }
-      console.log('karlo peder');
       var currencies = [];
       if (OldHome.tokensDict) {
         for (var [label, value] of Object.entries(OldHome.tokensDict)) {
           currencies.push({ value: value, label: label });
         }
-        console.log(currencies);
+        currencies.push({ value: 'ETH', label: 'ETH' });
       }
       this.setState({
         loading: false,
-        prevCampList: newCamps,
         currCampList: newCamps,
         currs: currencies
       });
-      console.log(newCamps);
-      setTimeout(() => this.setState({ loading: true }), 20000);
     });
 
     if (!this.state.loading) {
@@ -67,16 +63,11 @@ export default class ProductList extends Component {
         </Grid>
       );
     } else {
-      console.log(this.state.currs);
-
       return (
-        <Grid container spacing={3}>
-          {this.state.prevCampList.map((camp) => (
-            <Grid key={camp.id} item xs={12} sm={6} md={3}>
-              <ShopProductCard camp={camp} currencies={this.state.currs} />
-            </Grid>
-          ))}
-        </Grid>
+        <div>
+          <CircularProgress />
+          Loading....
+        </div>
       );
     }
   }

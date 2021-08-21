@@ -4,7 +4,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { Stack, TextField, Button } from '@material-ui/core';
+import { Stack, TextField, Button, CircularProgress } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 import Home from '../../OldHome';
 
 export default function FormDialog({ id, currencies }) {
@@ -12,6 +13,7 @@ export default function FormDialog({ id, currencies }) {
   const [currency, setCurrency] = React.useState('');
   const [amount, setAmount] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [isSubmitting, setSubmit] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -20,7 +22,8 @@ export default function FormDialog({ id, currencies }) {
     setOpen(false);
   };
   const handleDonate = () => {
-    OldHome.donate(id, amount, email, currency);
+    setSubmit(true);
+    OldHome.donate(id, amount, email, currency).then(setOpen(false));
     console.log(amount);
   };
   const handleChange = (event) => {
@@ -78,9 +81,10 @@ export default function FormDialog({ id, currencies }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDonate} color="primary">
+          <Button onClick={handleDonate} color="primary" disabled={isSubmitting}>
             Donate
           </Button>
+          {isSubmitting && <CircularProgress />}
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>

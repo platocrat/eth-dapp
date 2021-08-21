@@ -59,7 +59,11 @@ LinearProgressWithLabel.propTypes = {
 export default function ShopProductCard({ camp, currencies }) {
   const { name, id, currFund, goal, description, endStamp, daysLeft, color } = camp;
   const classes = useStyles();
-  const [progress, setProgress] = React.useState(parseFloat(100 * (currFund / goal)).toFixed(2));
+  const [progress, setProgress] = React.useState(0);
+  React.useEffect(() => {
+    setProgress(parseFloat(100 * (currFund / goal)).toFixed(2));
+  }, [currFund]);
+  //
   // React.useEffect(() => {
   //   const timer = setInterval(() => {
   //     setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
