@@ -11,6 +11,7 @@ import User from './pages/User';
 import Home from './pages/Home';
 import AddCamp from './pages/AddCampaign';
 import NotFound from './pages/Page404';
+import ToL2 from './pages/ToL2';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +25,8 @@ export default function Router() {
         { path: 'app', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
-        { path: 'newCampaign', element: <AddCamp /> }
+        { path: 'newCampaign', element: <AddCamp /> },
+        { path: 'Layer2', element: <ToL2 /> }
       ]
     },
     {

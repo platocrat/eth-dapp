@@ -10,6 +10,7 @@ init('user_ZYwxMAlLHOgUNKO4wSLBm');
 const ethers = require('ethers');
 const color = '#d2d2d2';
 const pinataSDK = require('@pinata/sdk');
+const web3 = require('web3');
 
 class Home extends Component {
   constructor(props) {
@@ -624,23 +625,49 @@ class Home extends Component {
     });
     return 0;
   }
+  //   async addCampaign(name, goal, description, date, time) {
+  //     var datetime = date + 'T' + time;
+  //     var stamp = new Date(datetime);
+  //     stamp = Math.floor(Date.parse(datetime) / 1000);
+  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //     const signer = provider.getSigner();
+  //     const address = await signer.getAddress();
+  //     const orgContract = this.contractOrg.connect(signer);
+  //     console.log(goal);
+  //     goal = ethers.utils.parseEther('1.0');
+  //     console.log(goal);
+  //     var parameters = { gasLimit: 0x7a1200 };
+  //     console.log(goal._hex[0]);
+  //     var tx = await orgContract.addCampaign(name, tokens, description, stamp, address);
+  //   }
   async addCampaign(name, goal, description, date, time) {
+    console.log(date, time);
     var datetime = date + 'T' + time;
     var stamp = new Date(datetime);
     stamp = Math.floor(Date.parse(datetime) / 1000);
+    const orgAbi = Organisation.abi;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     var address = await signer.getAddress();
-    const orgContract = this.contractOrg.connect(signer);
-    console.log(goal);
+    const contractOrg = new ethers.Contract(
+      '0x583F1A72C30AC3c1134b29aBfc826F59e9e97Cb6',
+      orgAbi,
+      provider
+    );
+    const orgContract = contractOrg.connect(signer);
     goal = ethers.utils.parseEther(goal);
-    console.log(goal);
     var parameters = {
       gasLimit: 0x7a1200
     };
-    var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
-  }
 
+    var counter = await orgContract.campaignCounter();
+    counter += 1;
+    var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
+    console.log(counter);
+
+    var receipt = await tx.wait();
+    window.location.replace('http://localhost:3000');
+  }
   handleLoadingChange(event) {
     this.setState({ loading: true });
     event.preventDefault();
