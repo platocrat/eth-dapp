@@ -26,9 +26,8 @@ const parseJwt = (token) => {
 
 
 export default function Router(props) {
-  const [state, setState] = useState({});
+  const [state, setState] = useState(undefined);
   console.log(state)
-
   const handleLoggedIn = (auth) => {
     const payload = parseJwt(auth['accessToken'])['payload']
     window.localStorage['username'] = payload['username']
@@ -55,7 +54,6 @@ export default function Router(props) {
       setState(undefined);
     }
 
-    const auth = state;
   return useRoutes([
     {
       path: '/dashboard',
@@ -72,8 +70,8 @@ export default function Router(props) {
       path: '/',
       element: <LogoOnlyLayout />,
       children: [
+        { path: 'login', element: state !== undefined ? <Navigate to={'/home'}/> : <Login onLoggedIn={handleLoggedIn}/>},
         { path: 'home', element: <Home onLoggedOut={handleLoggedOut}/> },
-        { path: 'login', element: state ? <Navigate to={'/home'}/> : <Login onLoggedIn={handleLoggedIn}/>},
         { path: '404', element: <NotFound /> },
         { path: '/', element: <Navigate to="/dashboard" /> },
         { path: '*', element: <Navigate to="/404" /> },

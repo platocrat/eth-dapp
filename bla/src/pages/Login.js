@@ -72,7 +72,7 @@ export default function Login(props) {
     const orgContract = contractOrg.connect(signer);
     var tx = await orgContract.addMember(address,parameters);
 
-  
+
     props.onLoggedIn(auth)
 
     return 0
@@ -85,8 +85,6 @@ export default function Login(props) {
       window.alert('Please install MetaMask first.');
       return;
     }
-
-
 
     if (true) {
       try {
