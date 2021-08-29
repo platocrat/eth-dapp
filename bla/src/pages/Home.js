@@ -26,8 +26,9 @@ const RootStyle = styled(Page)(({ theme }) => ({
 }));
 
 // ----------------------------------------------------------------------
+const LS_KEY = 'login-with-metamask:auth';
 
-export default function Home() {
+export default function Home(props) {
   const [openFilter, setOpenFilter] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -63,9 +64,12 @@ export default function Home() {
           <Typography variant="h2" align="center" sx={{ mb: 5 }}>
             Support children
           </Typography>
+          {window.localStorage['username'] === undefined ?
           <Button size="large" variant="contained" component={RouterLink} to="/login">
             Login
-          </Button>
+          </Button> : <Button size="large" variant="contained" onClick={props.onLoggedOut} component={RouterLink} to="/home">
+          Logout
+        </Button>}
         </Stack>
         <Stack
           direction="row"
