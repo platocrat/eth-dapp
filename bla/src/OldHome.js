@@ -11,11 +11,12 @@ const ethers = require('ethers');
 const color = '#d2d2d2';
 const pinataSDK = require('@pinata/sdk');
 const web3 = require('web3');
+require('dotenv').config();
 
 class Home extends Component {
   constructor(props) {
     super(props);
-    const { exit } = require('process');
+    require('dotenv').config();
     this.campAbi = Campaign.abi;
     this.orgAbi = Organisation.abi;
     this.swapAbi = SwapExamples.abi;
@@ -280,31 +281,31 @@ class Home extends Component {
     this.handleEmail = this.handleEmail.bind(this);
     this.handleMemberAddress = this.handleMemberAddress.bind(this);
     this.handleToken = this.handleToken.bind(this);
-    this.provider = new ethers.providers.InfuraProvider(
-      'ropsten',
-      '0ea19bbf4c4d49518a0966666ff234f3'
-    );
-    //const url = "http://localhost:7545"
-    //this.provider = new ethers.providers.JsonRpcProvider(url);
+    // this.provider = new ethers.providers.InfuraProvider(
+    //   'optimistic-kovan',
+    //   '0ea19bbf4c4d49518a0966666ff234f3'
+    // );
+    const url = 'https://kovan.optimism.io';
+    this.provider = new ethers.providers.JsonRpcProvider(url);
     this.finishedCampaigns = [];
     this.virtualCamps = {};
     this.subscribed = new Set();
-    this.tokenListURL = ['https://tokens.uniswap.org/', 'https://testnet.tokenlist.eth.link/'];
+    this.tokenListURL = [
+      'https://tokens.uniswap.org/',
+      'https://testnet.tokenlist.eth.link/',
+      'https://static.optimism.io/optimism.tokenlist.json'
+    ];
     this.tokenListJSON = [];
-    this.tokensDict = {
-      DAI: '0xad6d458402f60fd3bd25163575031acdce07538d',
-      WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
-      USDT: '0x110a13fc3efe6a245b50102d2d79b3e76125ae83'
-    };
+    this.tokensDict = {};
     this.contractOrg = new ethers.Contract(
-      '0x583F1A72C30AC3c1134b29aBfc826F59e9e97Cb6',
+      process.env.REACT_APP_ORGANISATION_CONTRACT_ADDRESS,
       this.orgAbi,
       this.provider
     );
-    this.swapperAddress = '0xaeda743de9aeaEf60604cDd9077B664E10a0B844';
+    this.swapperAddress = process.env.REACT_APP_SWAPPER_CONTRACT_ADDRESS;
     this.loadTokenList();
-    this.pinataApiKey = '78422e3a7f7f490ac776';
-    this.pinataSecretApiKey = '5d65bc1b6d2d865088d1974323f65c32061eb91c7c5d1b4895c4659ba933dfcc';
+    this.pinataApiKey = process.env.REACT_APP_PINATA_API_KEY;
+    this.pinataSecretApiKey = process.env.REACT_APP_PINATA_SECRET_KEY;
     this.imgURI =
       'https://ipfs.io/ipfs/QmRQX6MEwTcumgo2xhVagQ5mj7AxENB4AK6axPMM28aLz1?filename=Lisa.jpeg';
     this.items = [
@@ -333,7 +334,8 @@ class Home extends Component {
     ];
   }
   async loadTokenList() {
-    var timer = null;
+    require('dotenv').config();
+    var chainId = process.env.REACT_APP_CHAIN_ID;
     await this.tokenListURL.forEach((url) => {
       fetch(url)
         .then((response) => response.json())
@@ -341,7 +343,7 @@ class Home extends Component {
           // jsonData is parsed json object received from url
           this.tokenListJSON.push(jsonData);
           jsonData.tokens.forEach((element) => {
-            if (element.chainId == '3') {
+            if (element.chainId == chainId) {
               this.tokensDict[element.symbol] = element.address;
             }
           });
@@ -413,7 +415,7 @@ class Home extends Component {
       var camp = new ethers.Contract(addr, this.campAbi, this.provider);
       var name = await camp.name();
       var id = await camp.id();
-      var currFund = await camp.currFund();
+      var currFund = await this.provider.getBalance(addr);
       var goal = await camp.goal();
       var description = await camp.description();
       var finished = await camp.finished();
@@ -474,23 +476,44 @@ class Home extends Component {
   async swap(campaignId, amount, email, token, uri) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
+    console.log(provider, signer);
     var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
-    var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
+    console.log(campAddress);
+    var contract = new ethers.Contract(campAddress, this.campAbi, provider);
     contract = contract.connect(signer);
     console.log(amount);
-    console.log(token);
-    var tokenContract = new ethers.Contract(token, this.genericERC20Abi, this.provider);
+    console.log(token, this.genericERC20Abi, provider);
+    var tokenContract = new ethers.Contract(token, this.genericERC20Abi, provider);
+    console.log('1');
     tokenContract = tokenContract.connect(signer);
     var decimals = await tokenContract.decimals();
     amount = ethers.utils.parseUnits(amount, decimals);
+    console.log(this.swapperAddress);
+    var gasPrice = await provider.getGasPrice();
+    var gasEstimate = await tokenContract.estimateGas.approve(this.swapperAddress, amount);
     var parameters = {
-      gasLimit: 0x7a120
+      gasLimit: gasEstimate,
+      gasPrice: gasPrice
     };
     var approval = await tokenContract.approve(this.swapperAddress, amount, parameters);
     console.log(approval);
-    var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, this.provider);
+    var swapContract = new ethers.Contract(this.swapperAddress, this.swapAbi, provider);
     swapContract = swapContract.connect(signer);
-
+    gasPrice = await provider.getGasPrice();
+    var block = await provider.getBlock('latest');
+    console.log(block.gasLimit);
+    // gasEstimate = await swapContract.estimateGas.swapExactInputSingle(
+    //   amount,
+    //   token,
+    //   campAddress,
+    //   uri,
+    //   email
+    // );
+    parameters = {
+      gasLimit: gasEstimate,
+      gasPrice: gasPrice
+    };
+    console.log(parameters);
     var outAmount = await swapContract.swapExactInputSingle(
       amount,
       token,
@@ -545,8 +568,9 @@ class Home extends Component {
         console.log(result);
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
+        var address = await signer.getAddress();
+        console.log(address);
         var uri = result.IpfsHash;
-        console.log(currency);
         if (currency == 'ETH') {
           var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
           var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
@@ -564,15 +588,17 @@ class Home extends Component {
           //     //   ]
           //     // };
           //   }
-
+          const gasPrice = await provider.getGasPrice();
+          const gasEstimate = await contract.estimateGas.donate(email, uri);
           var parameters = {
             value: ethers.utils.parseEther(amount),
-            gasLimit: 0x7a120
+            gasLimit: gasEstimate,
+            gasPrice: gasPrice
           };
+          console.log(parameters);
           var tx = await contract.donate(email, uri, parameters);
         } else {
           var token = currency;
-          console.log(token);
           this.swap(campaignId, amount, email, token, uri);
         }
         this.setState({
@@ -641,29 +667,37 @@ class Home extends Component {
   //     var tx = await orgContract.addCampaign(name, tokens, description, stamp, address);
   //   }
   async addCampaign(name, goal, description, date, time) {
-    console.log(date, time);
-    var datetime = date + 'T' + time;
-    var stamp = new Date(datetime);
-    stamp = Math.floor(Date.parse(datetime) / 1000);
+    require('dotenv').config();
+    console.log(date);
+    console.log(time);
+    var datetime = date.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    console.log(datetime);
+    var stamp = Math.floor(datetime / 1000);
     const orgAbi = Organisation.abi;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     var address = await signer.getAddress();
-    const contractOrg = new ethers.Contract(
-      '0x583F1A72C30AC3c1134b29aBfc826F59e9e97Cb6',
-      orgAbi,
-      provider
-    );
+    const orgAddress = process.env.REACT_APP_ORGANISATION_CONTRACT_ADDRESS;
+    console.log(orgAddress);
+    const contractOrg = new ethers.Contract(orgAddress, orgAbi, provider);
     const orgContract = contractOrg.connect(signer);
     goal = ethers.utils.parseEther(goal);
+    const gasPrice = await provider.getGasPrice();
+    console.log(stamp);
+    const gasEstimate = await orgContract.estimateGas.addCampaign(
+      name,
+      goal,
+      description,
+      stamp,
+      address
+    );
+    console.log(gasPrice);
+    console.log(gasEstimate, gasPrice);
     var parameters = {
-      gasLimit: 0x7a1200
+      gasLimit: gasEstimate,
+      gasPrice: gasPrice
     };
-
-    var counter = await orgContract.campaignCounter();
-    counter += 1;
     var tx = await orgContract.addCampaign(name, goal, description, stamp, address, parameters);
-    console.log(counter);
 
     var receipt = await tx.wait();
     window.location.replace('http://localhost:3000');

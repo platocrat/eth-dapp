@@ -17,17 +17,14 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+const path=require('path');
+require('dotenv').config();
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
-var HDWalletProvider = require("truffle-hdwallet-provider");
-var infura_apikey = "52a080cad405419aa4318047bde7087f";
-var mnemonic = "hammer general bridge west october end fiber media behind depend average swamp";
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const infuraKey = process.env.INFURA_API_KEY;
+const Mnemonic = process.env.MNEMONIC;
 module.exports = {
-  contracts_build_directory: "../my-app/src/abis",  
+  contracts_build_directory: "../bla/src/abis",  
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -50,11 +47,27 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
     ropsten: {
-      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f"),
+      provider: new HDWalletProvider(Mnemonic, "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f"),
       host: "https://ropsten.infura.io/v3/52a080cad405419aa4318047bde7087f",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "3",       // Any network (default: none)
      },
+     arbitrum: {
+      provider: new HDWalletProvider(Mnemonic, "https://arbitrum-rinkeby.infura.io/v3/0ea19bbf4c4d49518a0966666ff234f3"),
+      host: "https://arbitrum-rinkeby.infura.io/v3/0ea19bbf4c4d49518a0966666ff234f3",     // Localhost (default: none)
+      port: 7545,            // Standard Ethereum port (default: none)
+      network_id: "*", // Any network (default: none)    
+      gasPrice: 0,
+     },
+     optimistic_kovan: {
+      network_id: 69,
+      chain_id: 69,
+      gas:  15000000,
+      provider: function() {
+        return new HDWalletProvider(Mnemonic, "https://optimism-kovan.infura.io/v3/"+ infuraKey, 0, 1);
+      }
+    },
+     
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
@@ -84,21 +97,26 @@ module.exports = {
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
-    // timeout: 100000
+    timeout: 100000
   },
 
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.0",    // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.7.6",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
-      //  evmVersion: "byzantium"
-      // }
+  //     settings:  {
+  //       optimizer: {
+  //         enabled: true,
+  //         runs: 800
+  //       }
+  //     }
+  //   },
+  // db: {
+  //   enabled: false
     },
   },
+  plugins: [
+    'truffle-plugin-verify'
+  ],
 };

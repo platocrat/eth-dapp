@@ -1,4 +1,4 @@
-pragma solidity ^0.8.0;
+pragma solidity 0.7.6;
 pragma abicoder v2;
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,7 +17,7 @@ contract SwapExamples {
     uint24 public constant poolFee = 3000;
     address public constant DAI = 0xaD6D458402F60fD3Bd25163575031ACDce07538D;
     address public constant WETH10_addr = 0xF1acf4697EF35F0edD2Cf0BC352d4be94B6220f5;
-    address public constant WETH9_addr = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
+    address public constant WETH9_addr = 0x4200000000000000000000000000000000000006;
 
     constructor(ISwapRouter _swapRouter) {
         swapRouter = _swapRouter;

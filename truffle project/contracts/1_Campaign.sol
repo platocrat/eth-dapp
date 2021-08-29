@@ -1,8 +1,8 @@
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity 0.7.6;
 pragma abicoder v2;
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./4_SimpleNFT.sol";
 
@@ -40,7 +40,8 @@ contract Campaign {
     event Donated(uint amount, uint campaignId, string name, string mail);
     
     function donate(string memory _mail, string memory _uri) public payable returns(bool sufficient) {
-        require(tx.origin.balance >= msg.value, "Campaign::donate: Insuficient funds");
+        uint256 balance = IERC20(0x4200000000000000000000000000000000000006).balanceOf(msg.sender);
+        require(balance >= msg.value, "Campaign::donate: Insuficient funds");
         require(endTimeStamp > block.timestamp, "Campaign::donate: This campaign has already finished");
         require(currFund + msg.value <= goal, "Campaign::donate: Hard cap reached");
         currFund += msg.value;
@@ -53,9 +54,9 @@ contract Campaign {
             withdraw();
         }
         emit Donated(msg.value, id, name, _mail);
-        if (donators[tx.origin] == false){
-            nfts.createSimpleNFT(_uri);
-            donators[tx.origin] = true;
+        if (donators[msg.sender] == false){
+            //nfts.createSimpleNFT(_uri);
+            donators[msg.sender] = true;
         }
         return true;
         
@@ -65,11 +66,13 @@ contract Campaign {
     function expiredWithdraw() public {
         require(endTimeStamp < block.timestamp, "Campaign::expiredWithdraw: This campaign is still active");
         require(msg.sender == owner, "campaign::expiredWithdraw: Only the beneficiary can withdraw the funds");
-        owner.transfer(address(this).balance);
+        uint256 balance = IERC20(0x4200000000000000000000000000000000000006).balanceOf(address(this));
+        owner.transfer(balance);
     }
 
     function withdraw() private returns(bool sufficient) {
-        owner.transfer(address(this).balance);
+        uint256 balance = IERC20(0x4200000000000000000000000000000000000006).balanceOf(address(this));
+        owner.transfer(balance);
         return true;
         }
     
