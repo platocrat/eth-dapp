@@ -28,9 +28,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function RegisterForm() {
+export default function RegisterForm(props) {
   const navigate = useNavigate();
   const [organisation, setOrganisation] = useState('');
+  const [name, setName] = useState('')
+  const [surname, setSurname] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [showPassword, setShowPassword] = useState(false);
   const [other, setOther] = useState(false);
 
@@ -49,7 +53,8 @@ export default function RegisterForm() {
       firstName: '',
       lastName: '',
       username: '',
-      email: ''
+      email: '',
+      organisation: 'other'
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
@@ -73,13 +78,7 @@ export default function RegisterForm() {
   });
 
   const handleChange = (event) => {
-    setOrganisation(event.target.value);
-    console.log(event.target.value);
-    if (event.target.value == 'Other') {
-      setOther(true);
-    } else {
-      setOther(false);
-    }
+    formik.handleChange(event)
   };
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
@@ -95,6 +94,8 @@ export default function RegisterForm() {
             {...getFieldProps('username')}
             error={Boolean(touched.password && errors.password)}
             helperText={touched.password && errors.password}
+            onChange={handleChange}
+
           />
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
@@ -103,6 +104,7 @@ export default function RegisterForm() {
               {...getFieldProps('firstName')}
               error={Boolean(touched.firstName && errors.firstName)}
               helperText={touched.firstName && errors.firstName}
+              onChange={handleChange}
             />
 
             <TextField
@@ -111,6 +113,8 @@ export default function RegisterForm() {
               {...getFieldProps('lastName')}
               error={Boolean(touched.lastName && errors.lastName)}
               helperText={touched.lastName && errors.lastName}
+              onChange={handleChange}
+
             />
           </Stack>
 
@@ -157,8 +161,9 @@ export default function RegisterForm() {
             type="submit"
             variant="contained"
             loading={isSubmitting}
+            onClick={() => props.handle(formik)}
           >
-            Register
+            Register with metamask
           </LoadingButton>
         </Stack>
       </Form>
