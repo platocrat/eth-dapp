@@ -502,13 +502,13 @@ class Home extends Component {
     gasPrice = await provider.getGasPrice();
     var block = await provider.getBlock('latest');
     console.log(block.gasLimit);
-    // gasEstimate = await swapContract.estimateGas.swapExactInputSingle(
-    //   amount,
-    //   token,
-    //   campAddress,
-    //   uri,
-    //   email
-    // );
+    gasEstimate = await swapContract.estimateGas.swapExactInputSingle(
+      amount,
+      token,
+      campAddress,
+      uri,
+      email
+    );
     parameters = {
       gasLimit: gasEstimate,
       gasPrice: gasPrice
