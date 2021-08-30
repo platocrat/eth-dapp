@@ -71,7 +71,11 @@ export default function Router(props) {
         {
           path: 'login',
           element:
-            state !== undefined ? <Navigate to={'/home'} /> : <Login onLoggedIn={handleLoggedIn} />
+            state !== undefined ? (
+              <Navigate to={'/dashboard/app'} />
+            ) : (
+              <Login onLoggedIn={handleLoggedIn} />
+            )
         },
         { path: 'home', element: <Home onLoggedOut={handleLoggedOut} /> },
         { path: '404', element: <NotFound /> },
