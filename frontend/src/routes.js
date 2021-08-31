@@ -25,7 +25,6 @@ const parseJwt = (token) => {
 
 export default function Router(props) {
   const [state, setState] = useState(undefined);
-  console.log(state);
   const handleLoggedIn = (auth) => {
     const payload = parseJwt(auth['accessToken'])['payload'];
     window.localStorage['username'] = payload['username'];

@@ -76,7 +76,10 @@ export default function ShopProductCard({ camp, currencies }) {
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        <ProductImgStyle alt={name} />
+        <ProductImgStyle
+          alt={name}
+          src="https://ipfs.infura.io/ipfs/QmSgvgwxZGaBLqkGyWemEDqikCqU52XxsYLKtdy3vGZ8uq"
+        />
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>

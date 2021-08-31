@@ -15,6 +15,13 @@ import TimePicker from '@material-ui/lab/TimePicker';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import Home from '../../../OldHome';
+import { create } from 'ipfs-http-client';
+
+const pinataSDK = require('@pinata/sdk');
+var FormData = require('form-data');
+const client = create('https://ipfs.infura.io:5001/api/v0');
+require('dotenv').config();
+
 // ----------------------------------------------------------------------
 
 export default function CreateForm() {
@@ -37,9 +44,23 @@ export default function CreateForm() {
       campDesc: ''
     },
     // validationSchema: RegisterSchema,
-    onSubmit: (values) => {
-      console.log(goal);
-      OldHome.addCampaign(values.campName, goal, values.campDesc, selectedDate, selectedTime);
+    onSubmit: async (values) => {
+      const options = {
+        pinataMetadata: {
+          name: values.campName,
+          keyvalues: {
+            customKey: 'customValue',
+            customKey2: 'customValue2'
+          }
+        },
+        pinataOptions: {
+          cidVersion: 0
+        }
+      };
+      const added = await client.add(file);
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      console.log(url);
+      OldHome.addCampaign(values.campName, goal, values.campDesc, selectedDate, selectedTime, url);
       //navigate('/dashboard', { replace: true });
     }
   });
@@ -50,6 +71,7 @@ export default function CreateForm() {
   const [file, setFile] = useState('');
   const [goal, setGoal] = useState('');
   const [currency, setCurrency] = React.useState('');
+  const [buffer, setBuffer] = React.useState('');
   const fileChangeHandler = (e) => {
     setFile(e.target.files[0]);
   };

@@ -5,6 +5,7 @@ import Campaign from './abis/Campaign.json';
 import Organisation from './abis/Organisation.json';
 import SwapExamples from './abis/SwapExamples.json';
 import OVM_L1StandardBridge from './abis/OVM_L1StandardBridge.json';
+import OVM_L2StandardBridge from './abis/OVM_L2StandardBridge.json';
 const FormData = require('form-data');
 const axios = require('axios');
 init('user_ZYwxMAlLHOgUNKO4wSLBm');
@@ -12,7 +13,7 @@ const ethers = require('ethers');
 const color = '#d2d2d2';
 const pinataSDK = require('@pinata/sdk');
 const web3 = require('web3');
-const { Watcher } = require('@eth-optimism/watcher');
+const { Watcher } = require('@eth-optimism/core-utils');
 require('dotenv').config();
 
 class Home extends Component {
@@ -622,7 +623,7 @@ class Home extends Component {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const l2RpcProvider = this.provider;
-    const l1MessengerAddress = '0x4361d0f75a0186c05f971c566dc6bea5957483fd';
+    const l1MessengerAddress = '0x4361d0F75A0186C05f971c566dC6bEa5957483fD';
     // L2 messenger address is always the same.
     const l2MessengerAddress = '0x4200000000000000000000000000000000000007';
 
@@ -646,15 +647,15 @@ class Home extends Component {
     console.log('Depositing tokens into L2 ...');
     amount = ethers.utils.parseEther(amount.toString());
     const tx2 = await L1StandardBridge.depositETH(2000000, '0x', { value: amount });
-    await tx2.wait();
-
+    const recep = await tx2.wait();
+    console.log(recep);
     // Wait for the message to be relayed to L2.
-    // console.log('Waiting for deposit to be relayed to L2...');
-    // const [msgHash1] = await watcher.getMessageHashesFromL1Tx(tx2.hash);
+    console.log('Waiting for deposit to be relayed to L2...');
+    const [msgHash1] = await watcher.getMessageHashesFromL1Tx(tx2.hash);
     var address = await signer.getAddress();
-    // const receipt = await watcher.getL2TransactionReceipt(msgHash1, true);
-    // console.log('receipt', receipt);
-    const L2_ERC20 = new ethers.Contract(
+    const receipt = await watcher.getL2TransactionReceipt(msgHash1, true);
+    console.log('receipt', receipt);
+    var L2_ERC20 = new ethers.Contract(
       '0x4200000000000000000000000000000000000006',
       this.genericERC20Abi,
       l2RpcProvider
@@ -663,19 +664,65 @@ class Home extends Component {
     console.log(`Balance on L1: ${await provider.getBalance(address)}`); // 0
     console.log(`Balance on L2: ${await L2_ERC20.balanceOf(address)}`); // 1234
 
-    // Burn the tokens on L2 and ask the L1 contract to unlock on our behalf.
-    // console.log(`Withdrawing tokens back to L1 ...`);
-    // const tx3 = await L2StandardBridge.withdraw(L2_ERC20.address, 1234, 2000000, '0x');
-    // await tx3.wait();
+    //
+  }
+  async withdrawL2(amount) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const l2RpcProvider = this.provider;
+    const l1MessengerAddress = '0x4361d0F75A0186C05f971c566dC6bEa5957483fD';
+    // L2 messenger address is always the same.
+    const l2MessengerAddress = '0x4200000000000000000000000000000000000007';
 
-    // // Wait for the message to be relayed to L1.
-    // console.log(`Waiting for withdrawal to be relayed to L1...`);
-    // const [msgHash2] = await watcher.getMessageHashesFromL2Tx(tx3.hash);
-    // await watcher.getL1TransactionReceipt(msgHash2);
+    // Tool that helps watches and waits for messages to be relayed between L1 and L2.
+    const watcher = new Watcher({
+      l1: {
+        provider: ethers.getDefaultProvider('kovan'),
+        messengerAddress: l1MessengerAddress
+      },
+      l2: {
+        provider: l2RpcProvider,
+        messengerAddress: l2MessengerAddress
+      }
+    });
+    var L2StandardBridge = new ethers.Contract(
+      '0x4200000000000000000000000000000000000010',
+      OVM_L2StandardBridge.abi,
+      l2RpcProvider
+    );
+    L2StandardBridge = L2StandardBridge.connect(signer);
 
-    // // Log balances again!
-    // console.log(`Balance on L1: ${await L1_ERC20.balanceOf(l1Wallet.address)}`); // 1234
-    // console.log(`Balance on L2: ${await L2_ERC20.balanceOf(l1Wallet.address)}`); // 0
+    var L2_ERC20 = new ethers.Contract(
+      '0x4200000000000000000000000000000000000006',
+      this.genericERC20Abi,
+      l2RpcProvider
+    );
+    console.log(`Withdrawing tokens back to L1 ...`);
+    amount = ethers.utils.parseEther(amount);
+    console.log(amount);
+    var gasPrice = l2RpcProvider.getGasPrice();
+    var gasLimit = await L2StandardBridge.estimateGas.withdraw(
+      L2_ERC20.address,
+      amount,
+      21000,
+      '0x'
+    );
+    console.log(gasLimit);
+    var parameters = {
+      gasPrice: gasPrice,
+      gasLimit: gasLimit
+    };
+    const tx3 = await L2StandardBridge.withdraw(L2_ERC20.address, amount, 21000, '0x', parameters);
+    await tx3.wait();
+
+    // Wait for the message to be relayed to L1.
+    console.log(`Waiting for withdrawal to be relayed to L1...`);
+    const [msgHash2] = await watcher.getMessageHashesFromL2Tx(tx3.hash);
+    await watcher.getL1TransactionReceipt(msgHash2);
+    var address = await signer.getAddress();
+    // Log balances again!
+    console.log(`Balance on L1: ${await provider.getBalanceOf(address)}`); // 1234
+    console.log(`Balance on L2: ${await L2_ERC20.balanceOf(address)}`); // 0
   }
   async sendMail(campaignId, curr_fund, goal, name, mails) {
     var sent = [];
@@ -727,7 +774,7 @@ class Home extends Component {
   //     console.log(goal._hex[0]);
   //     var tx = await orgContract.addCampaign(name, tokens, description, stamp, address);
   //   }
-  async addCampaign(name, goal, description, date, time) {
+  async addCampaign(name, goal, description, date, time, uri) {
     require('dotenv').config();
     console.log(date);
     console.log(time);

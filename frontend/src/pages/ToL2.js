@@ -109,15 +109,15 @@ export default function ToLayer2(currencies) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  const oldHome = new Home();
   const [withdraw, setWithdraw] = React.useState('optimistic');
   const onSubmit = () => {
     console.log(amount);
-    const oldHome = new Home();
     oldHome.depositL2(amount);
   };
-  const handleWithdraw = (event) => {
-    setWithdraw(event.target.value);
+  const handleWithdraw = () => {
+    console.log(amount);
+    oldHome.withdrawL2(amount);
   };
   return (
     <RootStyle title="Register | Minimal-UI">
@@ -228,13 +228,19 @@ export default function ToLayer2(currencies) {
                   aria-label="transaction-options"
                   name="option1"
                   value={value}
-                  onChange={handleWithdraw}
+                  onChange={(e) => setWithdraw(e.target.value)}
                 >
                   <FormControlLabel value="optimistic" control={<Radio />} label="Optimistic" />
                   <FormControlLabel value="fast" control={<Radio />} label="Fast" />
                 </RadioGroup>
               </FormControl>
-              <Button fullWidth size="large" type="submit" variant="contained">
+              <Button
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+                onClick={handleWithdraw}
+              >
                 Withdraw
               </Button>
             </TabPanel>
