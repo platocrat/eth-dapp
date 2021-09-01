@@ -15,6 +15,11 @@ import TimePicker from '@material-ui/lab/TimePicker';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import Home from '../../../OldHome';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 import { create } from 'ipfs-http-client';
 
 const pinataSDK = require('@pinata/sdk');
@@ -72,6 +77,7 @@ export default function CreateForm() {
   const [goal, setGoal] = useState('');
   const [currency, setCurrency] = React.useState('');
   const [buffer, setBuffer] = React.useState('');
+  const [layer, setLayer] = React.useState('');
   const fileChangeHandler = (e) => {
     setFile(e.target.files[0]);
   };
@@ -190,6 +196,19 @@ export default function CreateForm() {
             </Button>
             {file.name}
           </label>
+          <FormControl component="fieldset">
+          <FormLabel component="legend">Layer support</FormLabel>
+          <RadioGroup
+              aria-label="transaction-options"
+              name="option1"
+              value={layer}
+              onChange={(e) => setLayer(e.target.value)}
+            >
+            <FormControlLabel value="L1" control={<Radio />} label="Layer 1" />
+            <FormControlLabel value="L2" control={<Radio />} label="Layer 2" />
+            <FormControlLabel value="both" control={<Radio />} label="Both" />
+            </RadioGroup>
+          </FormControl>
           <LoadingButton
             fullWidth
             size="large"
@@ -197,7 +216,7 @@ export default function CreateForm() {
             variant="contained"
             loading={isSubmitting}
           >
-            Register
+            Create Campaign
           </LoadingButton>
         </Stack>
       </Form>

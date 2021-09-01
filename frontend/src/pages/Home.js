@@ -2,8 +2,9 @@ import { useFormik } from 'formik';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
-import { Container, Stack, Typography, Button } from '@material-ui/core';
+import { Container, Stack, Typography, Button, Box } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 // components
 import Page from '../components/Page';
 import {
@@ -12,23 +13,32 @@ import {
   ProductCartWidget,
   ProductFilterSidebar
 } from '../components/_dashboard/products';
-//
-import PRODUCTS from '../_mocks_/products';
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
-  display: 'flex',
-  minHeight: '100%',
-  alignItems: 'center',
-  paddingTop: theme.spacing(15),
-  paddingBottom: theme.spacing(10)
+  top: 50,
+  left: 0,
+  lineHeight: 0,
+  width: '100%',
+  position: 'absolute',
+  padding: theme.spacing(3, 3, 0),
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(5, 5, 0)
+  }
+}));
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
 }));
 
 // ----------------------------------------------------------------------
 const LS_KEY = 'login-with-metamask:auth';
 
 export default function Home(props) {
+  const classes = useStyles();
   const [openFilter, setOpenFilter] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -56,20 +66,19 @@ export default function Home(props) {
 
   return (
     <RootStyle title="Home page | Minimal-UI">
-      <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h2" align="center" sx={{ mb: 5 }} color="white">
-            .
-          </Typography>
-          <Typography variant="h2" align="center" sx={{ mb: 5 }}>
-            Support children
-          </Typography>
-          {window.localStorage['username'] === undefined ?
-          <Button size="large" variant="contained" component={RouterLink} to="/login">
+      <Container sx={0} >
+        <Box display="flex" justifyContent="flex-end" alignItems="right">
+        {window.localStorage['username'] === undefined ?
+          <Button variant="contained" component={RouterLink} to="/login" >
             Login
-          </Button> : <Button size="large" variant="contained" onClick={props.onLoggedOut} component={RouterLink} to="/home">
+          </Button> : <Button variant="contained" onClick={props.onLoggedOut} component={RouterLink} to="/home">
           Logout
         </Button>}
+        </Box>
+        <Stack direction="row" alignItems="center" justifyContent="center">
+          <Typography variant="h2" align="center">
+            Support children
+          </Typography>
         </Stack>
         <Stack
           direction="row"
@@ -89,7 +98,7 @@ export default function Home(props) {
             <ProductSort />
           </Stack>
         </Stack>
-        <ProductList products={PRODUCTS} />
+        <ProductList onlyOwner={false} />
       </Container>
     </RootStyle>
   );

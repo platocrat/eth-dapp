@@ -3,6 +3,7 @@ import pieChart2Fill from '@iconify/icons-eva/pie-chart-2-fill';
 import peopleFill from '@iconify/icons-eva/people-fill';
 import personAddFill from '@iconify/icons-eva/person-add-fill';
 import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
+import swapIcon from '../../arrow.right.arrow.left.circle.svg';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ const sidebarConfig = [
   },
   {title: 'Layer 2 swapper',
   path: '/dashboard/Layer2',
-  icon: getIcon(pieChart2Fill)
+  icon: getIcon(swapIcon)
 }
 ];
 

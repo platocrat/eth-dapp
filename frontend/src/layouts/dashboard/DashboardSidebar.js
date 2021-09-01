@@ -12,6 +12,8 @@ import { MHidden } from '../../components/@material-extend';
 //
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
+import SwapVertIcon  from '@material-ui/icons/SwapVert';
+import { makeStyles } from '@material-ui/styles';
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +24,12 @@ const RootStyle = styled('div')(({ theme }) => ({
     flexShrink: 0,
     width: DRAWER_WIDTH
   }
+}));
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
 }));
 
 const AccountStyle = styled('div')(({ theme }) => ({
@@ -40,8 +48,15 @@ DashboardSidebar.propTypes = {
 };
 
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
+  const classes = useStyles();
   const { pathname } = useLocation();
-
+  const changeLayer = () => {
+    if (window.localStorage["layer"] == "L1") {
+      window.localStorage["layer"] = "L2"
+    } else {
+      window.localStorage["layer"] = "L1"
+    }
+  }
   useEffect(() => {
     if (isOpenSidebar) {
       onCloseSidebar();
@@ -58,7 +73,18 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
     >
       <Box sx={{ px: 2.5, py: 3 }}>
         <Box component={RouterLink} to="/home" sx={{ display: 'inline-flex' }}>
-          <Logo />
+          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Logo />
+        <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<SwapVertIcon />}
+            justifyContent="flex-end"
+            align = "right"
+            onClick={changeLayer}
+          >Switch layer</Button>
+        </Stack>
         </Box>
       </Box>
 

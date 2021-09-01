@@ -163,7 +163,7 @@ export default function ToLayer2(currencies) {
                   helperText="Please select your currency"
                 ></TextField>
               </Stack>
-
+              
               <Icon icon={ArrowDownwardIcon} width={30} height={32} style={{ align: 'center' }} />
 
               <Typography> to: OPTIMISTIC KOVAN</Typography>

@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import { styled } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import { Typography, Button, Stack } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 // components
 import Logo from '../components/Logo';
+import SwapVertIcon  from '@material-ui/icons/SwapVert';
 //
 import { MHidden } from '../components/@material-extend';
 
@@ -26,6 +28,12 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   }
 }));
 
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
+
 // ----------------------------------------------------------------------
 
 AuthLayout.propTypes = {
@@ -33,10 +41,29 @@ AuthLayout.propTypes = {
 };
 
 export default function AuthLayout({ children }) {
+  const classes = useStyles();
+  const changeLayer = () => {
+    if (window.localStorage["layer"] == "L1") {
+      window.localStorage["layer"] = "L2"
+    } else {
+      window.localStorage["layer"] = "L1"
+    }
+  }
   return (
     <HeaderStyle>
       <RouterLink to="/">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Logo />
+        <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<SwapVertIcon />}
+            justifyContent="flex-end"
+            align = "right"
+            onClick={changeLayer}
+          >Switch layer</Button>
+        </Stack>
       </RouterLink>
 
       <MHidden width="smDown">

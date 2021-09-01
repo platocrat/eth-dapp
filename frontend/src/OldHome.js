@@ -406,6 +406,7 @@ class Home extends Component {
     var counter = await this.contractOrg.campaignCounter();
     for (let i = 1; i <= counter; i++) {
       var Campaign = {
+        owner: '',
         name: '',
         id: '',
         currFund: '',
@@ -416,6 +417,7 @@ class Home extends Component {
       };
       var addr = await this.contractOrg.campaigns(i);
       var camp = new ethers.Contract(addr, this.campAbi, this.provider);
+      var owner = await camp.owner();
       var name = await camp.name();
       var id = await camp.id();
       var currFund = await this.provider.getBalance(addr);
@@ -436,6 +438,7 @@ class Home extends Component {
         var mail = await camp.mails(j);
         mails.push(mail);
       }
+      Campaign.owner = owner.toString();
       Campaign.name = name.toString();
       Campaign.id = id.toString();
       Campaign.currFund = ethers.utils.formatEther(currFund.toString());

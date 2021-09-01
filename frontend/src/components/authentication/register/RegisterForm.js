@@ -78,7 +78,12 @@ export default function RegisterForm(props) {
   });
 
   const handleChange = (event) => {
-    formik.handleChange(event)
+    setOrganisation(event.target.value);
+    if (event.target.value == 'Other') {
+      setOther(true);
+    } else {
+      setOther(false);
+    }
   };
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
@@ -94,8 +99,6 @@ export default function RegisterForm(props) {
             {...getFieldProps('username')}
             error={Boolean(touched.password && errors.password)}
             helperText={touched.password && errors.password}
-            onChange={handleChange}
-
           />
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
@@ -104,7 +107,6 @@ export default function RegisterForm(props) {
               {...getFieldProps('firstName')}
               error={Boolean(touched.firstName && errors.firstName)}
               helperText={touched.firstName && errors.firstName}
-              onChange={handleChange}
             />
 
             <TextField
@@ -113,8 +115,6 @@ export default function RegisterForm(props) {
               {...getFieldProps('lastName')}
               error={Boolean(touched.lastName && errors.lastName)}
               helperText={touched.lastName && errors.lastName}
-              onChange={handleChange}
-
             />
           </Stack>
 

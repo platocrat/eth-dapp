@@ -18,7 +18,8 @@ export default class ProductList extends Component {
       loading: true,
       currCampList: [],
       prevCampList: [],
-      currs: []
+      currs: [],
+      onlyOwner: props.onlyOwner
     };
   }
   render() {
@@ -27,6 +28,7 @@ export default class ProductList extends Component {
       var newCamps = [];
       for (var [key, value] of Object.entries(rez.activeCamps)) {
         var camp = {
+          owner: value.owner,
           name: value.name,
           id: value.id,
           currFund: value.currFund,
@@ -36,7 +38,11 @@ export default class ProductList extends Component {
           daysLeft: value.daysLeft,
           color: '#e0eede'
         };
-        newCamps.push(camp);
+        if (!this.state.onlyOwner){
+          newCamps.push(camp);
+        } else if (value.owner.toLowerCase() == window.localStorage["publicAddress"]){
+          newCamps.push(camp);
+        }
       }
       var currencies = [];
       currencies.push({ value: 'ETH', label: 'ETH' });
