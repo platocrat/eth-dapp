@@ -212,7 +212,7 @@ contract Campaign {
     function expiredWithdraw() public {
         require(endTimeStamp < block.timestamp, "Campaign::expiredWithdraw: This campaign is still active");
         require(msg.sender == owner, "campaign::expiredWithdraw: Only the beneficiary can withdraw the funds");
-        if (wantToken == addres(0)){
+        if (wantToken == address(0)){
             uint256 balance = address(this).balance;
             owner.transfer(balance);
         }else{
@@ -222,7 +222,7 @@ contract Campaign {
     }
 
     function withdraw() private returns(bool sufficient) {
-        if (wantToken == addres(0)){
+        if (wantToken == address(0)){
             uint256 balance = address(this).balance;
             owner.transfer(balance);
         }else{
