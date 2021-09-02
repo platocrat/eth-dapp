@@ -9,7 +9,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import { Icon } from '@iconify/react';
 import Tab from '@material-ui/core/Tab';
-import { Stack, TextField, Button } from '@material-ui/core';
+import { Stack, TextField, Button, Grid } from '@material-ui/core';
 import ArrowDownwardIcon from '@iconify/icons-eva/arrow-downward-fill';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -163,8 +163,12 @@ export default function ToLayer2(currencies) {
                   helperText="Please select your currency"
                 ></TextField>
               </Stack>
-              
-              <Icon icon={ArrowDownwardIcon} width={30} height={32} style={{ align: 'center' }} />
+
+              <Grid container direction="row" alignItems="center" xs={15}>
+                <Grid item>
+                  <Icon icon={ArrowDownwardIcon} width={30} height={32} display="block"/>
+                </Grid>
+              </Grid>
 
               <Typography> to: OPTIMISTIC KOVAN</Typography>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>

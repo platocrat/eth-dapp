@@ -16,21 +16,27 @@ contract Organisation {
     
     uint public campaignCounter;
     address public owner;
+    address public v3factory;
+    address public v3router;
+    address public WETH;
     mapping(address => uint) public members;
     mapping(uint => Campaign) public campaigns;
-    address public nft;
-    constructor(address _nft){
+    
+    constructor(address _v3factory, address _v3router, address _WETH){
+        v3router = _v3router;
+        v3factory = _v3factory;
+        WETH = _WETH;
         owner = msg.sender;
         members[owner] = 1;
-        nft = _nft;
     }
     
     
-    function addCampaign(string memory _name, uint _goal, string memory _description, uint _endTimestamp, address payable _beneficiary) public {
+    function addCampaign(string memory _name, uint _goal, string memory _description, uint _endTimestamp, address payable _beneficiary, address _wantToken, string memory _uri, address _l2Address, address _wantTokenL2) public {
         require(members[msg.sender] == 1);
         require(_endTimestamp > block.timestamp, "Organisation::addCampaign: Campaign must end in the future");
         campaignCounter ++;
-        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description, _endTimestamp, _beneficiary, nft);
+        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description, _endTimestamp, _beneficiary, _wantToken, v3factory,
+                                                v3router, WETH, _uri, _l2Address, _wantTokenL2);
     }
     
     function addMember(address _member) public {

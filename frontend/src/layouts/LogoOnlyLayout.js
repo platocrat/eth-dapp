@@ -37,6 +37,7 @@ export default function LogoOnlyLayout() {
     } else {
       window.localStorage["layer"] = "L1"
     }
+    console.log(window.localStorage["layer"]);
   }
   return (
     <>

@@ -24,7 +24,7 @@ export default function FormDialog({ id, currencies }) {
   const handleDonate = async () => {
     setSubmit(true);
     console.log(currency);
-    await OldHome.donate(id, amount, email, currency).then(() => {
+    await OldHome.donate(id, amount, email, currency, window.localStorage["layer"]).then(() => {
       setOpen(false);
       setSubmit(false);
     });

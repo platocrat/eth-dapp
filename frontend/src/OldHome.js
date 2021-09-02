@@ -265,43 +265,52 @@ class Home extends Component {
       inactiveCamps: {},
       token: '',
       success: false,
-      campLoadingFinished: false
+      campLoadingFinished: false,
+      layer: 'l2'
     };
 
     //this.state = {value: ''};
-    this.handleLoadingChange = this.handleLoadingChange.bind(this);
-    this.loadBlockchainData = this.loadBlockchainData.bind(this);
-    this.handleCampId = this.handleCampId.bind(this);
-    this.handleAddress = this.handleAddress.bind(this);
-    this.handleValue = this.handleValue.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleName = this.handleName.bind(this);
-    this.handleGoal = this.handleGoal.bind(this);
-    this.handleUser = this.handleUser.bind(this);
-    this.handleDescription = this.handleDescription.bind(this);
-    this.handleRecepient = this.handleRecepient.bind(this);
-    this.handleID = this.handleID.bind(this);
-    this.handleEmail = this.handleEmail.bind(this);
-    this.handleMemberAddress = this.handleMemberAddress.bind(this);
-    this.handleToken = this.handleToken.bind(this);
-    // this.provider = new ethers.providers.InfuraProvider(
-    //   'optimistic-kovan',
-    //   '0ea19bbf4c4d49518a0966666ff234f3'
-    // );
-    const url = 'https://kovan.optimism.io';
-    this.provider = new ethers.providers.JsonRpcProvider(url);
-    this.finishedCampaigns = [];
-    this.virtualCamps = {};
+    // this.handleLoadingChange = this.handleLoadingChange.bind(this);
+    // this.loadBlockchainData = this.loadBlockchainData.bind(this);
+    // this.handleCampId = this.handleCampId.bind(this);
+    // this.handleAddress = this.handleAddress.bind(this);
+    // this.handleValue = this.handleValue.bind(this);
+    // this.handleSubmit = this.handleSubmit.bind(this);
+    // this.handleName = this.handleName.bind(this);
+    // this.handleGoal = this.handleGoal.bind(this);
+    // this.handleUser = this.handleUser.bind(this);
+    // this.handleDescription = this.handleDescription.bind(this);
+    // this.handleRecepient = this.handleRecepient.bind(this);
+    // this.handleID = this.handleID.bind(this);
+    // this.handleEmail = this.handleEmail.bind(this);
+    // this.handleMemberAddress = this.handleMemberAddress.bind(this);
+    // this.handleToken = this.handleToken.bind(this);
+    var provider = new ethers.providers.InfuraProvider('kovan', '0ea19bbf4c4d49518a0966666ff234f3');
+    // var provider = ethers.getDefaultProvider('kovan');
+    this.l1 = {
+      provider: provider,
+      tokensDict: {},
+      tokenListURL: ['https://tokens.uniswap.org/', 'https://testnet.tokenlist.eth.link/'],
+      orgAddress: process.env.REACT_APP_ORGANISATION_CONTRACT_ADDRESS_L1,
+      chainID: 42,
+      orgAbi: [],
+      campAbi: []
+    };
+    provider = new ethers.providers.JsonRpcProvider('https://kovan.optimism.io');
+    this.l2 = {
+      provider: provider,
+      tokensDict: {},
+      tokenListURL: ['https://static.optimism.io/optimism.tokenlist.json'],
+      orgAddress: process.env.REACT_APP_ORGANISATION_CONTRACT_ADDRESS_L2,
+      chainID: 69,
+      orgAbi: Organisation.abi,
+      campAbi: Campaign.abi
+    };
+    console.log(this.l1, this.l2);
     this.subscribed = new Set();
-    this.tokenListURL = [
-      'https://tokens.uniswap.org/',
-      'https://testnet.tokenlist.eth.link/',
-      'https://static.optimism.io/optimism.tokenlist.json'
-    ];
     this.tokenListJSON = [];
-    this.tokensDict = {};
     this.contractOrg = new ethers.Contract(
-      process.env.REACT_APP_ORGANISATION_CONTRACT_ADDRESS,
+      process.env.REACT_APP_ORGANISATION_CONTRACT_ADDRESS_L2,
       this.orgAbi,
       this.provider
     );
@@ -336,18 +345,23 @@ class Home extends Component {
       }
     ];
   }
-  async loadTokenList() {
+  async loadTokenList(layer) {
     require('dotenv').config();
-    var chainId = process.env.REACT_APP_CHAIN_ID;
-    await this.tokenListURL.forEach((url) => {
+    if (layer == 'l1') {
+      var params = this.l1;
+    } else {
+      var params = this.l2;
+    }
+    var chainId = params.chainID;
+    await params.tokenListURL.forEach((url) => {
       fetch(url)
         .then((response) => response.json())
         .then((jsonData) => {
           // jsonData is parsed json object received from url
-          this.tokenListJSON.push(jsonData);
+          // this.tokenListJSON.push(jsonData);
           jsonData.tokens.forEach((element) => {
             if (element.chainId == chainId) {
-              this.tokensDict[element.symbol] = element.address;
+              params.tokensDict[element.symbol] = element.address;
             }
           });
         })
@@ -356,6 +370,11 @@ class Home extends Component {
           console.error(error);
         });
     });
+    if (layer == 'l1') {
+      this.l1 = params;
+    } else {
+      this.l2 = params;
+    }
   }
   uploadNftFile(amount, campName, stamp, currency) {
     const pinata = pinataSDK(this.pinataApiKey, this.pinataSecretApiKey);
@@ -399,14 +418,19 @@ class Home extends Component {
         return 0;
       });
   }
-  async loadBlockchainData() {
+  async loadBlockchainData(layer) {
     var activeCamps = {};
     var inactiveCamps = {};
     var finishedCamps = {};
-    var counter = await this.contractOrg.campaignCounter();
+    if (layer == 'L1') {
+      var params = this.l1;
+    } else {
+      var params = this.l2;
+    }
+    var contractOrg = new ethers.Contract(params.orgAddress, params.orgAbi, params.provider);
+    var counter = await contractOrg.campaignCounter();
     for (let i = 1; i <= counter; i++) {
       var Campaign = {
-        owner: '',
         name: '',
         id: '',
         currFund: '',
@@ -415,16 +439,15 @@ class Home extends Component {
         mails: [],
         endTimeStamp: 0
       };
-      var addr = await this.contractOrg.campaigns(i);
-      var camp = new ethers.Contract(addr, this.campAbi, this.provider);
-      var owner = await camp.owner();
+      var addr = await contractOrg.campaigns(i);
+      var camp = new ethers.Contract(addr, params.campAbi, params.provider);
       var name = await camp.name();
       var id = await camp.id();
-      var currFund = await this.provider.getBalance(addr);
+      var currFund = await params.provider.getBalance(addr);
       var goal = await camp.goal();
       var description = await camp.description();
       var finished = await camp.finished();
-      var block = await this.provider.getBlock('latest');
+      var block = await params.provider.getBlock('latest');
       var currStamp = block.timestamp;
       var endStamp = await camp.endTimeStamp();
       const date = Math.floor(new Date(endStamp * 1000));
@@ -438,7 +461,6 @@ class Home extends Component {
         var mail = await camp.mails(j);
         mails.push(mail);
       }
-      Campaign.owner = owner.toString();
       Campaign.name = name.toString();
       Campaign.id = id.toString();
       Campaign.currFund = ethers.utils.formatEther(currFund.toString());
@@ -531,7 +553,12 @@ class Home extends Component {
     console.log(outAmount);
   }
 
-  async donate(campaignId, amount, email, currency) {
+  async donate(campaignId, amount, email, currency, layer) {
+    if (layer == 'l1') {
+      var params = this.l1;
+    } else {
+      var params = this.l2;
+    }
     const pinata = pinataSDK(this.pinataApiKey, this.pinataSecretApiKey);
     pinata
       .testAuthentication()
@@ -543,10 +570,11 @@ class Home extends Component {
         //handle error here
         console.log(err);
       });
-    var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
+    var contractOrg = new ethers.Contract(params.orgAddress, params.orgAbi, params.provider);
+    var campAddress = await contractOrg.campaigns(parseInt(campaignId, 10));
     var camp = new ethers.Contract(campAddress, this.campAbi, this.provider);
     var name = await camp.name();
-    var block = await this.provider.getBlock('latest');
+    var block = await params.provider.getBlock('latest');
     var stamp = block.timestamp;
     const body = {
       name: name,
@@ -577,24 +605,11 @@ class Home extends Component {
         var address = await signer.getAddress();
         console.log(address);
         var uri = result.IpfsHash;
+        var campAddress = await contractOrg.campaigns(parseInt(campaignId, 10));
+        var contract = new ethers.Contract(campAddress, params.campAbi, params.provider);
+        contract = contract.connect(signer);
+        const gasPrice = await provider.getGasPrice();
         if (currency == 'ETH') {
-          var campAddress = await this.contractOrg.campaigns(parseInt(campaignId, 10));
-          var contract = new ethers.Contract(campAddress, this.campAbi, this.provider);
-          contract = contract.connect(signer);
-          //   if (
-          //     this.state.activeCamps[campaignId].currFund + ethers.utils.parseEther(amount) >
-          //     this.state.activeCamps[campaignId].goal
-          //   ) {
-          //     // return {
-          //     //   result: false,
-          //     //   message: 'Amount too large - hard cap limitation, try a lower amount',
-          //     //   value: [
-          //     //     this.state.activeCamps[campaignId].goal.toNumber() -
-          //     //       this.state.activeCamps[campaignId].currFund.toNumber()
-          //     //   ]
-          //     // };
-          //   }
-          const gasPrice = await provider.getGasPrice();
           const gasEstimate = await contract.estimateGas.donate(email, uri);
           var parameters = {
             value: ethers.utils.parseEther(amount),
@@ -602,10 +617,16 @@ class Home extends Component {
             gasPrice: gasPrice
           };
           console.log(parameters);
-          var tx = await contract.donate(email, uri, parameters);
+          var tx = await contract.donateETH(email, uri, parameters);
         } else {
           var token = currency;
-          this.swap(campaignId, amount, email, token, uri);
+          const gasEstimate = await contract.estimateGas.donateETH(email, uri);
+          var parameters = {
+            value: ethers.utils.parseEther(amount),
+            gasLimit: gasEstimate,
+            gasPrice: gasPrice
+          };
+          var tx = await contract.donateETH(email, uri, parameters);
         }
         this.setState({
           campId: '',
@@ -622,10 +643,9 @@ class Home extends Component {
       });
   }
   async depositL2(amount) {
-    const getL1ContractData = require('@eth-optimism/contracts');
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const l2RpcProvider = this.provider;
+    const l2RpcProvider = this.l2.provider;
     const l1MessengerAddress = '0x4361d0F75A0186C05f971c566dC6bEa5957483fD';
     // L2 messenger address is always the same.
     const l2MessengerAddress = '0x4200000000000000000000000000000000000007';
@@ -651,7 +671,6 @@ class Home extends Component {
     amount = ethers.utils.parseEther(amount.toString());
     const tx2 = await L1StandardBridge.depositETH(2000000, '0x', { value: amount });
     const recep = await tx2.wait();
-    console.log(recep);
     // Wait for the message to be relayed to L2.
     console.log('Waiting for deposit to be relayed to L2...');
     const [msgHash1] = await watcher.getMessageHashesFromL1Tx(tx2.hash);
@@ -672,7 +691,7 @@ class Home extends Component {
   async withdrawL2(amount) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const l2RpcProvider = this.provider;
+    const l2RpcProvider = this.l2.provider;
     const l1MessengerAddress = '0x4361d0F75A0186C05f971c566dC6bEa5957483fD';
     // L2 messenger address is always the same.
     const l2MessengerAddress = '0x4200000000000000000000000000000000000007';
@@ -680,7 +699,7 @@ class Home extends Component {
     // Tool that helps watches and waits for messages to be relayed between L1 and L2.
     const watcher = new Watcher({
       l1: {
-        provider: ethers.getDefaultProvider('kovan'),
+        provider: this.l1.provider,
         messengerAddress: l1MessengerAddress
       },
       l2: {
@@ -707,15 +726,20 @@ class Home extends Component {
     var gasLimit = await L2StandardBridge.estimateGas.withdraw(
       L2_ERC20.address,
       amount,
-      21000,
+      2000000,
       '0x'
     );
-    console.log(gasLimit);
     var parameters = {
       gasPrice: gasPrice,
       gasLimit: gasLimit
     };
-    const tx3 = await L2StandardBridge.withdraw(L2_ERC20.address, amount, 21000, '0x', parameters);
+    const tx3 = await L2StandardBridge.withdraw(
+      L2_ERC20.address,
+      amount,
+      2000000,
+      '0x',
+      parameters
+    );
     await tx3.wait();
 
     // Wait for the message to be relayed to L1.

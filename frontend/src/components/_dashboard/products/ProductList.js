@@ -24,7 +24,7 @@ export default class ProductList extends Component {
   }
   render() {
     const OldHome = new Home();
-    var camps = OldHome.loadBlockchainData().then((rez) => {
+    var camps = OldHome.loadBlockchainData(window.localStorage["layer"]).then((rez) => {
       var newCamps = [];
       for (var [key, value] of Object.entries(rez.activeCamps)) {
         var camp = {
