@@ -1,6 +1,6 @@
 pragma solidity 0.7.6;
 pragma abicoder v2;
-import "./1_Campaign.sol";
+import "./1_CampaignOVM.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
@@ -25,12 +25,12 @@ contract Organisation {
     }
     
     
-    function addCampaign(string memory _name, uint _goal, string memory _description, uint _endTimestamp, address _wantToken, string memory _uri, address _l2Address, address _wantTokenL2) public {
+    function addCampaign(string memory _name, uint _goal, string memory _description, uint _endTimestamp, address _wantToken, string memory _uri) public {
         require(members[msg.sender] == 1);
         require(_endTimestamp > block.timestamp, "Organisation::addCampaign: Campaign must end in the future");
         campaignCounter ++;
         campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description, _endTimestamp, _wantToken,
-                                                 _uri, _l2Address, _wantTokenL2);
+                                                 _uri);
     }
     
     function addMember(address _member) public {
