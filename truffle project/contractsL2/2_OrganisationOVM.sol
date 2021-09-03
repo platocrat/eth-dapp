@@ -9,30 +9,41 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // SPDX-License-Identifier: MIT
 
 contract Organisation {
-    
-        
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using SafeERC20 for IERC20;
-    
-    uint public campaignCounter;
+
+    uint256 public campaignCounter;
     address public owner;
-    mapping(address => uint) public members;
-    mapping(uint => Campaign) public campaigns;
-    
-    constructor(){
-        owner = msg.sender;
-        members[owner] = 1;
-    }
-    
-    
-    function addCampaign(string memory _name, uint _goal, string memory _description, uint _endTimestamp, address _wantToken, string memory _uri) public {
+    mapping(address => uint256) public members;
+    mapping(uint256 => Campaign) public campaigns;
+
+    constructor() {}
+
+    function addCampaign(
+        string memory _name,
+        uint256 _goal,
+        string memory _description,
+        uint256 _endTimestamp,
+        address _wantToken,
+        string memory _uri
+    ) public {
         require(members[msg.sender] == 1);
-        require(_endTimestamp > block.timestamp, "Organisation::addCampaign: Campaign must end in the future");
-        campaignCounter ++;
-        campaigns[campaignCounter] = new Campaign(campaignCounter, _name, _goal, _description, _endTimestamp, _wantToken,
-                                                 _uri);
+        require(
+            _endTimestamp > block.timestamp,
+            "Organisation::addCampaign: Campaign must end in the future"
+        );
+        campaignCounter++;
+        campaigns[campaignCounter] = new Campaign(
+            campaignCounter,
+            _name,
+            _goal,
+            _description,
+            _endTimestamp,
+            _wantToken,
+            _uri
+        );
     }
-    
+
     function addMember(address _member) public {
         members[_member] = 1;
     }
