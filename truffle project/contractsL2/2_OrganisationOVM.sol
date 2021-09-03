@@ -17,7 +17,10 @@ contract Organisation {
     mapping(address => uint256) public members;
     mapping(uint256 => Campaign) public campaigns;
 
-    constructor() {}
+    constructor() {
+        owner = msg.sender;
+        members[owner] = 1;
+    }
 
     function addCampaign(
         string memory _name,
